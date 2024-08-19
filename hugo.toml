@@ -1,0 +1,5 @@
+baseURL = 'https://hugo.ropelab.uber.space/'
+languageCode = 'de'
+title = 'Social Rope Lab'
+hugo_cache = '/home/ropelab/tmp'
+publishDir = '/var/www/virtual/ropelab/hugo.ropelab.uber.space'
