@@ -1,6 +1,11 @@
-# Getting Started with Create React App
+# rope-munch
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+nginx -p ~/dev/ropelab/hugo_website/rope-munch/ -c avoid_cors.conf
+
+
+
+
+
 
 ## Available Scripts
 

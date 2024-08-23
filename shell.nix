@@ -11,5 +11,6 @@ mkShell {
   packages = [
     pkgs_hugo.hugo
     nodejs_22
+    nginx
   ];
  }
