@@ -3,3 +3,5 @@
 /temp/
 
 hugo.toml
+/node_modules/
+/.direnv/
