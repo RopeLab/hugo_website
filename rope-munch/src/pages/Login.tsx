@@ -7,7 +7,7 @@ import {Dialog} from "primereact/dialog";
 import {PostLogin} from "../api/auth";
 
 
-const Login = ({OnLoggedIn}: {OnLoggedIn: () => void}) => {
+const Login = ({OnLoggedIn}: {OnLoggedIn: (userId: number) => void}) => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [showRest, setShowRest] = useState<boolean>(false);
@@ -24,9 +24,7 @@ const Login = ({OnLoggedIn}: {OnLoggedIn: () => void}) => {
   const onLogin = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
 
-    PostLogin(email, password, () => {
-      OnLoggedIn();
-    });
+    PostLogin(email, password, OnLoggedIn);
   }
 
   const errorPopup = (text: string) => {

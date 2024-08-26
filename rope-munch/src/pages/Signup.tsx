@@ -3,40 +3,41 @@ import React, { useState, useRef } from 'react';
 
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
-import { InputTextarea } from 'primereact/inputtextarea';
 import { Checkbox } from "primereact/checkbox";
-import { Slider } from 'primereact/slider';
 import { Steps } from 'primereact/steps';
 import { Toast } from 'primereact/toast';
-import {ProgressBar} from "primereact/progressbar";
-import {Tag} from "primereact/tag";
-import {GetActiveLevelFromPercent, GetPassiveLevelFromPercent, GetRoleFromPercent} from "../api/data";
 import {PostSignUp} from "../api/auth";
-import {PostUserData} from "../api/user_data";
+import {PostUserData, UserData} from "../api/user_data";
+import {
+  UserFetlifeSetting,
+  UserNameSetting, UserOpenSetting,
+  UserQuestionSetting,
+  UserRoleSettingDescriptive, UserShowSetting
+} from "../components/UserDataSettings";
 
-const Signup = ({OnSignUp, ShowLogIn}: {OnSignUp: () => void, ShowLogIn: () => void}) => {
+const Signup = ({OnSignUp, ShowLogIn}: {OnSignUp: (userId: number) => void, ShowLogIn: () => void}) => {
   const [step, setStep] = useState(-2)
 
-  const [name, setName] = useState("")
-  const [nameValid, setNameValid] = useState(true)
+  const [userData, setUserData] = useState<UserData>({
+    user_id: 0,
+    name: "",
+    fetlife_name: "",
+    experience_text: "",
+    found_us_text: "",
+    goal_text: "",
+    role_factor: 50,
+    active_factor: 0,
+    passive_factor: 0,
+    open: false,
+    show_name: false,
+    show_role: false,
+    show_experience: false,
+    show_open: false,
+  });
 
-  const [fetname, setFetName] = useState("")
-
+  const [nameValid, setNameValid] = useState(false)
   const [withQuestions, setWithQuestions] = useState(true)
   const [showQuestions, setShowQuestions] = useState(true)
-  const [foundUsText, setFoundUsText] = useState("")
-  const [experienceText, setExperinceText] = useState("")
-  const [goalText, setGoalText] = useState("")
-
-  const [roleFactor, setRoleFactor] = useState(0.5)
-  const [activeFactor, setActiveFactor] = useState(0.0)
-  const [passiveFactor, setPassiveFactor] = useState(0.0)
-  const [open, setOpen] = useState(false)
-
-  const [showName, setShowName] = useState(false)
-  const [showRole, setShowRole] = useState(false)
-  const [showExperience, setShowExperience] = useState(false)
-  const [showOpen, setShowOpen] = useState(false)
 
   const [email, setEmail] = useState("")
   const [emailValid, setEmailValid] = useState(true)
@@ -59,24 +60,10 @@ const Signup = ({OnSignUp, ShowLogIn}: {OnSignUp: () => void, ShowLogIn: () => v
 
     PostSignUp(email, password, (id) => {
 
-      PostUserData({
-        user_id: id,
-        name: name,
-        fetlife_name: fetname,
-        experience_text: experienceText,
-        found_us_text: foundUsText,
-        goal_text: goalText,
-        role_factor: roleFactor,
-        active_factor: activeFactor,
-        passive_factor: passiveFactor,
-        open: open,
-        show_name: showName,
-        show_role: showRole,
-        show_experience: showExperience,
-        show_open: showOpen,
-      });
+      userData.user_id = id;
+      PostUserData(userData);
 
-      OnSignUp();
+      OnSignUp(id);
     }, () => {
       errorPopup("Es gibt schon einen Account mit dieser Email.")
     }, () => {
@@ -87,8 +74,6 @@ const Signup = ({OnSignUp, ShowLogIn}: {OnSignUp: () => void, ShowLogIn: () => v
 
   const checkContent = () => {
     if (step === 0) {
-      const nameValid = name !== "";
-
       if (!nameValid) {
         errorPopup("Der Name / Nick darf nicht leer sein.");
       }
@@ -246,36 +231,12 @@ const Signup = ({OnSignUp, ShowLogIn}: {OnSignUp: () => void, ShowLogIn: () => v
                     <div className='mt-4 mb-2'>
                       Nenne uns einen Namen oder Scenen-Nick an dem wir dich identifzieren können.
                     </div>
-                    {nameValid ?
-                        <InputText
-                            type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            required
-                            placeholder="Name / Nick"
-                            className='w-full'
-                        /> :
-                        <InputText
-                            type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            required
-                            placeholder="Name / Nick"
-                            className='w-full p-invalid'
-                        />
-                    }
+                    <UserNameSetting userData={userData} setUserData={setUserData} valid={nameValid} setValid={setNameValid} />
 
                     <div className='mt-4 mb-2'>
                       Hast du einen Fetlife Aoccunt?
                     </div>
-                    <InputText
-                        type="text"
-                        value={fetname}
-                        onChange={(e) => setFetName(e.target.value)}
-                        required
-                        placeholder="Fetlife Name"
-                        className='w-full'
-                    />
+                    <UserFetlifeSetting userData={userData} setUserData={setUserData} />
 
                     {withQuestions ?
                         <div className='my-4 text-xl'>
@@ -304,38 +265,7 @@ const Signup = ({OnSignUp, ShowLogIn}: {OnSignUp: () => void, ShowLogIn: () => v
 
                     {showQuestions ?
                         <div>
-                          <div className='mt-4 mb-2'>
-                            Wie hast du vom Rope Lab erfahren?
-                          </div>
-                          <InputTextarea
-                              value={foundUsText}
-                              onChange={(e) => setFoundUsText(e.target.value)}
-                              placeholder="Ich habe euch ..."
-                              rows={5}
-                              className='w-full'
-                          />
-
-                          <div className='mt-4 mb-2'>
-                            Wie viel Erfahrung hast du mit Seilen?
-                          </div>
-                          <InputTextarea
-                              value={experienceText}
-                              onChange={(e) => setExperinceText(e.target.value)}
-                              placeholder="Ich habe ..."
-                              rows={5}
-                              className='w-full'
-                          />
-
-                          <div className='mt-4 mb-2'>
-                            Wenn du nach dem Event nach Hause gehst, was wünschst du dir getan, geschafft oder gelernt zu haben?
-                          </div>
-                          <InputTextarea
-                              value={goalText}
-                              onChange={(e) => setGoalText(e.target.value)}
-                              placeholder="Ich erhoffe mir vom Rope Lab ..."
-                              rows={5}
-                              className='w-full'
-                          />
+                          <UserQuestionSetting userData={userData} setUserData={setUserData}/>
                         </div> : <></>
                     }
 
@@ -367,116 +297,9 @@ const Signup = ({OnSignUp, ShowLogIn}: {OnSignUp: () => void, ShowLogIn: () => v
                   </div>
 
 
-                  <div className='mt-6 mb-2 text-xl'>
-                    Zu wie viele Prozent siehts du dich als Rope Top? (Deine Rolle)
-                  </div>
-                  <div className='mt-2 mb-3'>
-                    Darstellung:
-                    <ProgressBar
-                      className="bg-indigo-300 mt-1 mb-4"
-                      style={{height: '12px'}}
-                      displayValueTemplate={() => ""}
-                      value={roleFactor}
-                    />
+                  <UserRoleSettingDescriptive userData={userData} setUserData={setUserData}/>
 
-                    {GetRoleFromPercent(roleFactor).name}
-                  </div>
-
-                  <Slider
-                    value={roleFactor}
-                    onChange={(e) => setRoleFactor(e.value as number)}
-                    className='mx-2'
-                  />
-
-                  <div className='mt-6 mb-2 text-xl'>
-                    Wie gut kannst du fesseln?
-                  </div>
-                  <div className='mt-2 mb-3'>
-                    Darstellung:
-                    <ProgressBar
-                      className="mt-1 mb-4"
-                      style={{height: '12px'}}
-                      displayValueTemplate={() => ""}
-                      value={activeFactor}
-                    />
-
-                    {GetActiveLevelFromPercent(activeFactor).name}
-                  </div>
-                  <Slider
-                    value={activeFactor}
-                    onChange={(e) => setActiveFactor(e.value as number)}
-                    className='mx-2'
-                  />
-
-                  <div className='mt-6 mb-2 text-xl'>
-                    Wie viel Erfahrung hast du im gefesselt werden?
-                  </div>
-                  <div className='mt-2 mb-3'>
-                    Darstellung:
-                    <ProgressBar
-                      className="bg-indigo-300 mt-1 mb-4"
-                      style={{height: '12px'}}
-                      color="#dee2e6"
-                      displayValueTemplate={() => ""}
-                      value={100 - passiveFactor}
-                    />
-
-                    {GetPassiveLevelFromPercent(passiveFactor).name}
-                  </div>
-                  <Slider
-                    value={passiveFactor}
-                    onChange={(e) => setPassiveFactor(e.value as number)}
-                    className='mx-2'
-                  />
-
-                  <div className='mt-6 mb-2 text-xl'>
-                    Zusammen gesetzte Darstellung:
-                  </div>
-
-                  <div className="w-full flex flex-column">
-                    <label className="my-1">Rolle: {GetRoleFromPercent(roleFactor).name}</label>
-                    <ProgressBar
-                      className="w-full bg-indigo-300"
-                      style={{height: '12px'}}
-                      displayValueTemplate={() => ""}
-                      value={roleFactor}
-                    />
-                    <div className="w-full flex mt-1">
-                      <ProgressBar
-                        className="flex-grow-1 mr-1"
-                        style={{height: '7px'}}
-                        displayValueTemplate={() => ""}
-                        value={activeFactor}
-                      />
-                      <ProgressBar
-                        className="flex-grow-1 bg-indigo-300"
-                        style={{height: '7px'}}
-                        color="#dee2e6"
-                        displayValueTemplate={() => ""}
-                        value={100 - passiveFactor}
-                      />
-                    </div>
-                    <div className="w-full flex mt-1">
-                      <Tag value={GetActiveLevelFromPercent(activeFactor).name}/>
-                      <div className="flex-grow-1 mx-1"/>
-                      <Tag value={GetPassiveLevelFromPercent(passiveFactor).name} className='bg-indigo-300'/>
-                    </div>
-                  </div>
-
-                  <div className='mt-6 mb-2 text-xl'>
-                    Hast Interesse mit neuen Personen zu fesseln?
-                  </div>
-                  <div>
-                    <label className='mr-2 text-xl'>Ja:</label>
-                    <Checkbox
-                      onChange={e => {
-                        setOpen(e.checked!)
-                        if (!e) {
-                          setShowOpen(false)
-                        }
-                      }}
-                      checked={open}/>
-                  </div>
+                  <UserOpenSetting userData={userData} setUserData={setUserData}/>
 
                   <div className='flex'>
                     <Button
@@ -503,62 +326,26 @@ const Signup = ({OnSignUp, ShowLogIn}: {OnSignUp: () => void, ShowLogIn: () => v
 
               {step === 2 &&
                 <div>
-                  <div className='my-4 text-xl'>
-                    Hier kannst du einstellen was andere Teilnehmer sehen können.
-                  </div>
+                  <UserShowSetting userData={userData} setUserData={setUserData} />
 
-
-                  <div className="field grid">
-                    <label className="col-fixed w-10rem">Namen / Nick:</label>
-                    <Checkbox
-                      onChange={e => setShowName(e.checked!)}
-                      checked={showName}
-                      className='col'/>
-                  </div>
-
-                  <div className="field grid">
-                    <label className="col-fixed w-10rem">Rolle:</label>
-                    <Checkbox
-                      onChange={e => setShowRole(e.checked!)}
-                      checked={showRole}
-                      className='col'/>
-                  </div>
-
-                  <div className="field grid">
-                    <label className="col-fixed w-10rem">Erfahrung:</label>
-                    <Checkbox
-                      onChange={e => setShowExperience(e.checked!)}
-                      checked={showExperience}
-                          className='col'/>
-                    </div>
-
-                    {open ?
-                        <div className="field grid">
-                          <label className="col-fixed w-10rem">Mit neuen Personen zu fesseln:</label>
-                          <Checkbox
-                              onChange={e => setShowOpen(e.checked!)}
-                              checked={showOpen}
-                              className='col'/>
-                        </div> : <></>}
-
-                    <div className='flex'>
-                      <Button
-                          onClick={() => {setStep(1)}}
-                          className='my-4'>
-                        Zurück
-                      </Button>
-                      <div className='flex-grow-1'/>
-                      <Button
-                          onClick={() => {
-                            if (checkContent()) {
-                              setStep(3)
-                            }
+                  <div className='flex'>
+                    <Button
+                        onClick={() => {setStep(1)}}
+                        className='my-4'>
+                      Zurück
+                    </Button>
+                    <div className='flex-grow-1'/>
+                    <Button
+                        onClick={() => {
+                          if (checkContent()) {
+                            setStep(3)
                           }
-                          }
-                          className='my-4'>
-                        Weiter
-                      </Button>
-                    </div>
+                        }
+                        }
+                        className='my-4'>
+                      Weiter
+                    </Button>
+                  </div>
                   </div>}
 
               {step == 3 &&
@@ -577,47 +364,29 @@ const Signup = ({OnSignUp, ShowLogIn}: {OnSignUp: () => void, ShowLogIn: () => v
                     <div className='mt-4 mb-2'>
                       Email:
                     </div>
-                    {emailValid ?
-                        <InputText
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                            placeholder="Email address"
-                            className='w-full'
-                        /> :
-                        <InputText
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                            placeholder="Email address"
-                            className='w-full p-invalid'
-                        />
-
-                    }
+                      <InputText
+                          type="email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          required
+                          placeholder="Email address"
+                          className='w-full'
+                          invalid={!emailValid}
+                      />
 
 
                     <div className='mt-4 mb-2'>
                       Password
                     </div>
-                    {passwordValid ?
-                        <InputText
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                            placeholder="Password"
-                            className='w-full'
-                        /> :
-                        <InputText
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                            placeholder="Password"
-                            className='w-full p-invalid'
-                        />}
+                      <InputText
+                          type="password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          required
+                          placeholder="Password"
+                          className='w-full'
+                          invalid={!passwordValid}
+                      />
 
 
                     <div className='flex'>

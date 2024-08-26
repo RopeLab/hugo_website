@@ -1,15 +1,18 @@
 import {useState} from "react";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import {Account} from "./pages/Account";
 
 enum Page {
   Main,
   Login,
   Signup,
+  Account
 }
 
 const App = ({}) => {
-  const [page, SetPage] = useState<Page>(Page.Signup);
+  const [page, setPage] = useState<Page>(Page.Signup);
+  const [userId, setUserId] = useState<number| undefined>()
 
   let content = <>
     <label>No Content activated!!!</label>
@@ -19,14 +22,21 @@ const App = ({}) => {
     case Page.Main:
       break
     case Page.Login: content = <Login
-      OnLoggedIn={() => SetPage(Page.Main)}
+      OnLoggedIn={(id) => {
+        setUserId(id);
+        setPage(Page.Account)
+      }}
     />
       break
     case Page.Signup: content = <Signup
-      OnSignUp={() => SetPage(Page.Main)
-      }
-      ShowLogIn={() => SetPage(Page.Login)}
+      OnSignUp={(id) => {
+        setUserId(id);
+        setPage(Page.Main);
+      }}
+      ShowLogIn={() => setPage(Page.Login)}
     />
+      break
+    case Page.Account: content = <Account userId={userId}/>
       break
   }
 

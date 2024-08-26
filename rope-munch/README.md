@@ -1,7 +1,7 @@
 # rope-munch
 
-nginx -p ~/dev/ropelab/hugo_website/rope-munch/ -c avoid_cors.conf
-
+## About CORS
+https://stackoverflow.com/questions/13953908/cors-cookie-with-domain-field-is-setting-only-in-firefox-using-jquery-ajax/16634887#16634887
 
 
 

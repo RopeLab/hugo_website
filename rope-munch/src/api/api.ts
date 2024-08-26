@@ -4,6 +4,20 @@ export class ErrorMessage {
   "message": string
 }
 
+export const GetAPI = (
+  route: string,
+  OnResult: (response: Response) => void
+) => {
+  fetch(BACKEND_URL + route, {
+    method: 'GET',
+    credentials: "include",
+    headers: {
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Access-Control-Allow-Origin': BACKEND_URL,
+    }
+  }).then(OnResult);
+}
+
 export const PostAPI = <Content>(
   route: string,
   content: Content,
@@ -12,9 +26,10 @@ export const PostAPI = <Content>(
   fetch(BACKEND_URL + route, {
     method: 'POST',
     body: JSON.stringify(content),
+    credentials: "include",
     headers: {
       'Content-Type': 'application/json; charset=UTF-8',
-      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Origin': BACKEND_URL,
     }
   }).then(OnResult);
 }
@@ -33,3 +48,5 @@ export const ResponseToClass = <Result>(
     }
   });
 }
+
+

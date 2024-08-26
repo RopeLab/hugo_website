@@ -6,8 +6,6 @@ class Credentials {
   "password": string
 }
 
-
-
 export const PostLogin = (email: string, password: string, OnLoggedIn: (id: number) => void) => {
   PostAPI<Credentials>("/login", {
     "email": email,

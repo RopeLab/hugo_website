@@ -1,7 +1,7 @@
-import {ErrorMessage, PostAPI, ResponseToClass} from "./api";
+import {ErrorMessage, GetAPI, PostAPI, ResponseToClass} from "./api";
 import {PostLogin} from "./auth";
 
-class NewUserData {
+export class UserData {
   "user_id": number
   "name": string
   "fetlife_name": string
@@ -20,14 +20,33 @@ class NewUserData {
 
 
 export const PostUserData = (
-  user_data: NewUserData
+  user_data: UserData
 ) => {
-  PostAPI<NewUserData>("/user_data", user_data, (response) => {
+  PostAPI<UserData>("/user_data", user_data, (response) => {
     if (!response.ok) {
       ResponseToClass(response, (message: ErrorMessage) => {
         console.log("Post user data error: " + message.message);
       }, () => {
         console.log("No error message!!! This should never happen");
+      });
+    }
+  });
+}
+
+export const GetUserData = (
+  userId: number,
+  setUserData: (userData: UserData) => void,
+) => {
+  GetAPI("/user_data/" + userId, (response) => {
+    if (!response.ok) {
+      ResponseToClass(response, (message: ErrorMessage) => {
+        console.log("Post user data error: " + message.message);
+      }, () => {
+        console.log("No error message!!! This should never happen");
+      });
+    } else {
+      ResponseToClass(response, setUserData, () => {
+        console.log("UserData did not match!!! This should never happen");
       });
     }
   });
