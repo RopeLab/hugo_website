@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { PrimeReactProvider, PrimeReactContext } from 'primereact/api';
+import { PrimeReactProvider } from 'primereact/api';
 
 import './theme.css'
 import 'primeflex/primeflex.css'

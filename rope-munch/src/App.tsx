@@ -2,12 +2,17 @@ import {useState} from "react";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import {Account} from "./pages/Account";
+import AdminUsers from "./pages/AdminUsers";
+import AdminEvents from "./pages/AdminEvents";
 
 enum Page {
   Main,
   Login,
   Signup,
-  Account
+  Account,
+  AdminUsers,
+  AdminEvents,
+
 }
 
 const App = ({}) => {
@@ -24,7 +29,7 @@ const App = ({}) => {
     case Page.Login: content = <Login
       OnLoggedIn={(id) => {
         setUserId(id);
-        setPage(Page.Account)
+        setPage(Page.AdminEvents)
       }}
     />
       break
@@ -36,7 +41,11 @@ const App = ({}) => {
       ShowLogIn={() => setPage(Page.Login)}
     />
       break
-    case Page.Account: content = <Account userId={userId}/>
+    case Page.Account: content = <Account userId={userId!} onSave={() => {}}/>
+      break
+    case Page.AdminUsers: content = <AdminUsers back={() => {setPage(Page.Account)}}/>
+      break
+    case Page.AdminEvents: content = <AdminEvents back={() => {setPage(Page.Account)}}/>
       break
   }
 

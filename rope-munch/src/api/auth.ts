@@ -1,5 +1,5 @@
 import Cookies from 'universal-cookie';
-import {ErrorMessage, PostAPI, ResponseToClass} from "./api";
+import {ErrorMessage, GetAPI, PostAPI, ResponseToClass} from "./api";
 
 class Credentials {
   "email": string
@@ -13,10 +13,6 @@ export const PostLogin = (email: string, password: string, OnLoggedIn: (id: numb
   }, (r) => {
     ResponseToClass(r, (id: number) => {
       console.log("Logged in: " + id);
-
-      const cookies = new Cookies();
-      cookies.set('myCat', 'Pacman', { path: '/' });
-      console.log(cookies.get('myCat')); // Pacman
 
       OnLoggedIn(id);
     }, () => {
@@ -49,6 +45,25 @@ export const PostSignUp = (
     } else {
       console.log("Signed up");
       PostLogin(email, password, OnSignedUp);
+    }
+  });
+}
+
+export const GetEmail = (
+    userId: number,
+    setEmail: (email: string) => void,
+) => {
+  GetAPI("/user/" + userId + "/email", (response) => {
+    if (!response.ok) {
+      ResponseToClass(response, (message: ErrorMessage) => {
+        console.log("Get email error: " + message.message);
+      }, () => {
+        console.log("No error message!!! This should never happen");
+      });
+    } else {
+      ResponseToClass(response, setEmail, () => {
+        console.log("Email did not match!!! This should never happen");
+      });
     }
   });
 }

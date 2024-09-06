@@ -2,41 +2,36 @@ import React, {useEffect, useRef, useState} from "react";
 import {GetUserData, PostUserData, UserData} from "../api/user_data";
 import {
   RoleOverview,
-  UserActiveSetting,
   UserFetlifeSetting,
   UserNameSetting,
-  UserOpenSetting, UserPassiveSetting,
+  UserOpenSetting,
   UserQuestionSetting, UserRoleSetting,
-  UserRoleSettingDescriptive,
   UserShowSetting
 } from "../components/UserDataSettings";
 import {Button} from "primereact/button";
 import {Toast} from "primereact/toast";
+import {UserEmail} from "../components/UserAuthData";
 
 
-export const Account = ({userId}: {userId: number | undefined}) => {
+export const Account = ({userId, onSave}: {userId: number, onSave: () => void}) => {
   const [userData, setUserData] = useState<UserData | undefined>(undefined);
   const [nameValid, setNameValid] = useState<boolean>(true);
   const toast = useRef<Toast>(null);
 
   useEffect(() => {
-    if (!userId) {
-      setUserData(undefined);
-      return
-    }
-
     GetUserData(userId, setUserData);
 
   }, [userId]);
 
 
-  const onSave = () => {
+  const on_save = () => {
     if (!nameValid) {
       errorPopup("Der Name / Nick darf nicht leer sein.");
       return;
     }
 
-    PostUserData(userData!)
+    PostUserData(userData!);
+    onSave();
   }
 
   const errorPopup = (text: string) => {
@@ -44,7 +39,7 @@ export const Account = ({userId}: {userId: number | undefined}) => {
   }
 
   if (!userData) {
-    return <><label>Loading</label></>
+    return <label>Loading</label>
   }
 
   return (
@@ -53,7 +48,17 @@ export const Account = ({userId}: {userId: number | undefined}) => {
         <Toast ref={toast}/>
         <div className="flex flex-column align-content-center text-l gap-2 mx-2">
 
-          <div className='mt-6 mb-2 text-lg'>
+          <div className='mt-6 text-3xl flex justify-content-center'>
+            Nutzer Daten
+          </div>
+
+          <div className='mt-4 mb-2 text-lg'>
+            <label className="mr-2">E-Mail:</label>
+            <UserEmail user_id={userId}/>
+          </div>
+
+
+          <div className='mt-4 mb-2 text-lg'>
             Name
           </div>
           <UserNameSetting userData={userData} setUserData={setUserData} valid={nameValid} setValid={setNameValid}/>
@@ -74,22 +79,12 @@ export const Account = ({userId}: {userId: number | undefined}) => {
           </div>
           <UserRoleSetting userData={userData} setUserData={setUserData}/>
 
-          <div className='mt-6 mb-2 text-lg'>
-            Aktiv
-          </div>
-          <UserActiveSetting userData={userData} setUserData={setUserData}/>
-
-          <div className='mt-6 mb-2 text-lg'>
-            Passiv
-          </div>
-          <UserPassiveSetting userData={userData} setUserData={setUserData}/>
-
           <UserOpenSetting userData={userData} setUserData={setUserData}/>
           <UserShowSetting userData={userData} setUserData={setUserData}/>
           <UserQuestionSetting userData={userData} setUserData={setUserData}/>
 
           <div className="m-2 flex justify-content-end">
-            <Button className="text-xl" onClick={onSave}>Speichern</Button>
+            <Button className="text-xl" onClick={on_save}>Speichern</Button>
           </div>
         </div>
       </div>

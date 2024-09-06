@@ -26,13 +26,11 @@ const Signup = ({OnSignUp, ShowLogIn}: {OnSignUp: (userId: number) => void, Show
     found_us_text: "",
     goal_text: "",
     role_factor: 50,
-    active_factor: 0,
-    passive_factor: 0,
     open: false,
     show_name: false,
     show_role: false,
-    show_experience: false,
     show_open: false,
+    new: false,
   });
 
   const [nameValid, setNameValid] = useState(false)
@@ -286,17 +284,6 @@ const Signup = ({OnSignUp, ShowLogIn}: {OnSignUp: (userId: number) => void, Show
 
               {step === 1 &&
                 <div>
-                  <div className='my-4 text-xl'>
-                    Hier kannst du ein paar Infos über dich angeben.
-                  </div>
-
-                  <div>
-                    Diese Infos können optional für andere sichtbar sein,
-                    aber vorallem helfen sie uns einzuschätzen welcher Verteilung und Wissensstand beim den Events sein
-                    wird.
-                  </div>
-
-
                   <UserRoleSettingDescriptive userData={userData} setUserData={setUserData}/>
 
                   <UserOpenSetting userData={userData} setUserData={setUserData}/>
@@ -352,13 +339,6 @@ const Signup = ({OnSignUp, ShowLogIn}: {OnSignUp: (userId: number) => void, Show
                   <div className='flex flex-column'>
                     <div className='align-self-center my-4 text-xl'>
                       Bitte lege einen Account mit Email und Passwort an.
-                    </div>
-
-                    <div className='mt-2'>
-                      Ich weiß noch ein Account und noch ein Passwort...
-                    </div>
-                    <div className='mb-2'>
-                      Aber für diese erste Version geht es nicht anders. Wir arbeiten an Alternativen.
                     </div>
 
                     <div className='mt-4 mb-2'>
