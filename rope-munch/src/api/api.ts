@@ -34,6 +34,21 @@ export const PostAPI = <Content>(
   }).then(OnResult);
 }
 
+export const PostAPIWithoutContent = (
+  route: string,
+  OnResult: (response: Response) => void
+) => {
+  fetch(BACKEND_URL + route, {
+    method: 'POST',
+    credentials: "include",
+    headers: {
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Access-Control-Allow-Origin': BACKEND_URL,
+    }
+  }).then(OnResult);
+}
+
+
 export const ResponseToClass = <Result>(
   response: Response,
   OnOk: (result: Result) => void,

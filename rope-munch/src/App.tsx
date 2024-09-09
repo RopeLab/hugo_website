@@ -18,7 +18,8 @@ enum Page {
 
 const App = ({}) => {
   const [page, setPage] = useState<Page>(Page.Signup);
-  const [userId, setUserId] = useState<number| undefined>()
+  const [user_id, setUserId] = useState<number| undefined>();
+  const [register_to_event_id, setRegisterToEventId] = useState<number| undefined>();
 
   let content = <>
     <label>No Content activated!!!</label>
@@ -26,12 +27,15 @@ const App = ({}) => {
 
   switch (page) {
     case Page.Events:
-      content = <Events userId={userId}/>
+      content = <Events user_id={user_id} registerToEvent={(event_id) => {
+        setRegisterToEventId(event_id);
+        setPage(Page.Signup);
+      }}/>
       break
     case Page.Login: content = <Login
       OnLoggedIn={(id) => {
         setUserId(id);
-        setPage(Page.Events)
+        setPage(Page.Events);
       }}
     />
       break
@@ -43,7 +47,7 @@ const App = ({}) => {
       ShowLogIn={() => setPage(Page.Login)}
     />
       break
-    case Page.Account: content = <Account userId={userId!} onSave={() => {}}/>
+    case Page.Account: content = <Account userId={user_id!} onSave={() => {}}/>
       break
     case Page.AdminUsers: content = <AdminUsers back={() => {setPage(Page.Account)}}/>
       break
