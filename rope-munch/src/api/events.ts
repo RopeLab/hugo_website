@@ -1,6 +1,7 @@
 import {ErrorMessage, GetAPI, PostAPI, ResponseToClass} from "./api";
 
 export class RopeEvent {
+  "id": number | undefined;
   "visible_date": Date;
   "register_deadline": Date;
   "date": Date;
@@ -11,9 +12,27 @@ export class RopeEvent {
   "description": string;
 }
 
+export class RopeEventFromAPI {
+  "id": number | undefined;
+  "visible_date": string;
+  "register_deadline": string;
+  "date": string;
+  "archive_date": string;
+  "slots": number;
+  "visible": boolean;
+  "archive": boolean;
+  "description": string;
+}
+
+// Remove the Z when converting date to json
+// eslint-disable-next-line no-extend-native
+Date.prototype.toJSON = function(){
+  return new Date(this.getTime() - (this.getTimezoneOffset() * 60000)).toISOString().slice(0, -1);
+};
 
 export const PostEvent = (
-  event: RopeEvent
+  event: RopeEvent,
+  onDone?: () => void
 ) => {
   PostAPI<RopeEvent>("/event", event, (response) => {
     if (!response.ok) {
@@ -23,7 +42,61 @@ export const PostEvent = (
         console.log("No error message!!! This should never happen");
       });
     }
+
+    if (onDone) {
+      onDone()
+    }
   });
+}
+
+export const UpdateEvent = (
+  event: RopeEvent,
+  onDone?: () => void
+) => {
+  PostAPI<RopeEvent>("/event/" + event.id! , event, (response) => {
+    if (!response.ok) {
+      ResponseToClass(response, (message: ErrorMessage) => {
+        console.log("Post event error: " + message.message);
+      }, () => {
+        console.log("No error message!!! This should never happen");
+      });
+    }
+
+    if (onDone) {
+      onDone()
+    }
+  });
+}
+
+export const DeleteEvent = (
+  event: RopeEvent,
+  onDone?: () => void
+) => {
+  PostAPI<RopeEvent>("/event/" + event.id! + "/delete" , event, (response) => {
+    if (!response.ok) {
+      ResponseToClass(response, (message: ErrorMessage) => {
+        console.log("Post event error: " + message.message);
+      }, () => {
+        console.log("No error message!!! This should never happen");
+      });
+    }
+
+    if (onDone) {
+      onDone()
+    }
+  });
+}
+
+const parseEvent = (event: RopeEventFromAPI) => {
+  const parsedEvent: RopeEvent = {
+    ...event,
+    date: new Date(event.date),
+    visible_date: new Date(event.visible_date),
+    archive_date: new Date(event.archive_date),
+    register_deadline: new Date(event.register_deadline),
+  }
+
+  return parsedEvent;
 }
 
 export const GetEvent = (
@@ -38,7 +111,9 @@ export const GetEvent = (
         console.log("No error message!!! This should never happen");
       });
     } else {
-      ResponseToClass(response, setEvent, () => {
+      ResponseToClass(response, (event: RopeEventFromAPI) => {
+        setEvent(parseEvent(event))
+      }, () => {
         console.log("Event did not match!!! This should never happen");
       });
     }
@@ -56,7 +131,9 @@ export const GetEvents = (
         console.log("No error message!!! This should never happen");
       });
     } else {
-      ResponseToClass(response, setEvents, () => {
+      ResponseToClass(response, (events: RopeEventFromAPI[]) => {
+        setEvents(events.map(parseEvent));
+      }, () => {
         console.log("Events did not match!!! This should never happen");
       });
     }

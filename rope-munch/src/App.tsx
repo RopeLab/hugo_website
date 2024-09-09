@@ -1,12 +1,13 @@
-import {useState} from "react";
+import React, {useState} from "react";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import {Account} from "./pages/Account";
 import AdminUsers from "./pages/AdminUsers";
 import AdminEvents from "./pages/AdminEvents";
+import {Events} from "./pages/Events";
 
 enum Page {
-  Main,
+  Events,
   Login,
   Signup,
   Account,
@@ -24,19 +25,20 @@ const App = ({}) => {
   </>
 
   switch (page) {
-    case Page.Main:
+    case Page.Events:
+      content = <Events userId={userId}/>
       break
     case Page.Login: content = <Login
       OnLoggedIn={(id) => {
         setUserId(id);
-        setPage(Page.AdminEvents)
+        setPage(Page.Events)
       }}
     />
       break
     case Page.Signup: content = <Signup
       OnSignUp={(id) => {
         setUserId(id);
-        setPage(Page.Main);
+        setPage(Page.Events);
       }}
       ShowLogIn={() => setPage(Page.Login)}
     />

@@ -1,5 +1,4 @@
 import {ErrorMessage, GetAPI, PostAPI, ResponseToClass} from "./api";
-import {PostLogin} from "./auth";
 
 export class UserData {
   "user_id": number
