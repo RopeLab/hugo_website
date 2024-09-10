@@ -35,7 +35,7 @@ const App = ({}) => {
     case Page.Login: content = <Login
       OnLoggedIn={(id) => {
         setUserId(id);
-        setPage(Page.Events);
+        setPage(Page.AdminEvents);
       }}
     />
       break

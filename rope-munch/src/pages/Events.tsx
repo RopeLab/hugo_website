@@ -134,8 +134,6 @@ const MemberList = (
     </div>)
   }
 
-
-
   const eventInfo = <label>
     {register_count} / {event.slots} angemeldet --- {wait_count === 1 && wait_count + " wartet --- "}
     {wait_count > 1 && wait_count + " warten --- "}

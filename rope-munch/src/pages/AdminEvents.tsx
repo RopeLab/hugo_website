@@ -47,7 +47,7 @@ const AdminEvents = ({back}: {back: () => void}) => {
       const header = getTimeString(event.date);
       return (
         <AccordionTab key={header} header={header}>
-          <div className='flex flex-row-reverse mt-2'>
+          <div className='flex flex-row-reverse mt-2 flex-wrap'>
             <ConfirmPopup/>
             <Button className="p-button-danger" onClick={(e) => {
               confirmPopup({
@@ -75,7 +75,7 @@ const AdminEvents = ({back}: {back: () => void}) => {
   };
 
   return (
-    <div className="card">
+    <div className='mx-2'>
       <Dialog header="Neues Event" visible={showNewEvent} onHide={() => setShowNewEvent(false)}>
         <EventSettings event={newEvent} setEvent={setNewEvent} onSave={() => {
           setShowNewEvent(false);
