@@ -13,7 +13,7 @@ export class EventUser {
   "open": boolean;
 }
 
-export class RegisterUser {
+export class UserIdAndGuests {
   "user_id": number;
   "guests": number;
 }
@@ -41,8 +41,9 @@ export const RegisterToEvent = (
   event_id: number,
   user_id: number,
   guests: number,
+  onDone: () => void,
 ) => {
-  PostAPI<RegisterUser>("/event/" + event_id + "/register", {"user_id": user_id, "guests": guests}, (response) => {
+  PostAPI<UserIdAndGuests>("/event/" + event_id + "/register", {"user_id": user_id, "guests": guests}, (response) => {
     if (!response.ok) {
       ResponseToClass(response, (message: ErrorMessage) => {
         console.log("Register event error: " + message.message);
@@ -50,5 +51,44 @@ export const RegisterToEvent = (
         console.log("No error message!!! This should never happen");
       });
     }
+
+    onDone();
+  });
+}
+
+export const UnRegisterFromEvent = (
+  event_id: number,
+  user_id: number,
+  onDone: () => void,
+) => {
+  PostAPI<number>("/event/" + event_id + "/unregister", user_id, (response) => {
+    if (!response.ok) {
+      ResponseToClass(response, (message: ErrorMessage) => {
+        console.log("Register event error: " + message.message);
+      }, () => {
+        console.log("No error message!!! This should never happen");
+      });
+    }
+
+    onDone();
+  });
+}
+
+export const ChangeGuestsOfEvent = (
+  event_id: number,
+  user_id: number,
+  guests: number,
+  onDone: () => void,
+) => {
+  PostAPI<UserIdAndGuests>("/event/" + event_id + "/change_guests", {"user_id": user_id, "guests": guests}, (response) => {
+    if (!response.ok) {
+      ResponseToClass(response, (message: ErrorMessage) => {
+        console.log("Register event error: " + message.message);
+      }, () => {
+        console.log("No error message!!! This should never happen");
+      });
+    }
+
+    onDone();
   });
 }
