@@ -2,7 +2,7 @@ import {Button} from "primereact/button";
 import {Accordion, AccordionTab} from "primereact/accordion";
 import { Dialog } from 'primereact/dialog';
 import React, {useEffect, useState} from "react";
-import {DeleteEvent, GetEvents, RopeEvent} from "../api/events";
+import {DeleteEvent, GetEvents, GetGermanDateTime, RopeEvent} from "../api/events";
 import {EventSettings} from "../components/EventSettings";
 import { ConfirmPopup, confirmPopup } from 'primereact/confirmpopup';
 
@@ -13,10 +13,6 @@ export const parseNumber = (s: string): number => {
   }
 
   return n
-}
-
-const getTimeString = (date: Date) => {
-  return date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear() + " " + date.getHours() + ":" + date.getMinutes()
 }
 
 const AdminEvents = ({back}: {back: () => void}) => {
@@ -44,7 +40,7 @@ const AdminEvents = ({back}: {back: () => void}) => {
     return events.map((event, i) => {
 
       console.log(event)
-      const header = getTimeString(event.date);
+      const header = GetGermanDateTime(event.date);
       return (
         <AccordionTab key={header} header={header}>
           <div className='flex flex-row-reverse mt-2 flex-wrap'>

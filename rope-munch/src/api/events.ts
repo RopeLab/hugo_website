@@ -139,3 +139,15 @@ export const GetEvents = (
     }
   });
 }
+
+export const GetGermanDateTime = (date: Date) => {
+  return date.getDate() + "." + (date.getMonth() + 1) + ".'" + (date.getFullYear() - 2000) + " - " + date.getHours() + ":" + date.getMinutes()
+}
+
+export const GetGermanDate = (date: Date) => {
+  return date.getDate() + "." + (date.getMonth() + 1) + ".'" + (date.getFullYear() - 2000)
+}
+
+export const GetGermanTime = (date: Date) => {
+  return date.getHours() + ":" + date.getMinutes()
+}

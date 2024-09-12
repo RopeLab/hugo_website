@@ -1,10 +1,12 @@
 import React, {RefObject, useEffect, useRef, useState} from "react";
-import { Dropdown } from 'primereact/dropdown';
-import { Toast } from 'primereact/toast';
-import { DataScroller } from 'primereact/datascroller';
-import { Button } from 'primereact/button';
-import { Dialog } from 'primereact/dialog'
-import {GetEvents, RopeEvent} from "../api/events";
+import {Dropdown} from 'primereact/dropdown';
+import {Toast} from 'primereact/toast';
+import {DataScroller} from 'primereact/datascroller';
+import {Button} from 'primereact/button';
+import {Dialog} from 'primereact/dialog'
+import {Image} from 'primereact/image';
+import Markdown from 'react-markdown'
+import {GetEvents, GetGermanDate, GetGermanDateTime, GetGermanTime, RopeEvent} from "../api/events";
 import {ChangeGuestsOfEvent, EventUser, GetEventUsers, RegisterToEvent, UnRegisterFromEvent} from "../api/event_users";
 import {
   EventUserGuests,
@@ -13,8 +15,16 @@ import {
   EventUserRole,
   EventUserState
 } from "../components/EventUserViews";
+import Menu from "../components/Menue"
+import {Page} from "../App";
 
-export const Events = ({user_id, registerToEvent}: {user_id: number | undefined, registerToEvent: (event_id: number) => void}) => {
+
+export const Events = ({user_id, registerToEvent, setPage, onLoggedOut}: {
+  user_id: number | undefined,
+  registerToEvent: (event_id: number) => void,
+  setPage: (page: Page) => void,
+  onLoggedOut: () => void
+}) => {
 
   const toast = useRef<Toast>(null);
 
@@ -25,9 +35,29 @@ export const Events = ({user_id, registerToEvent}: {user_id: number | undefined,
   }, []);
 
   const [event, setEvent] = useState<RopeEvent | undefined>(undefined);
+
+  useEffect(() => {
+    let new_event = events.find((test_event) => {
+      return event != null && test_event.id === event.id
+    })
+
+    if (new_event == null) {
+      new_event = events[0]
+
+      // Find the next event
+      events.forEach(event => {
+        if (new_event!.date > event.date && event.date.getUTCDate() >= Date.now()) {
+          new_event = event
+        }
+      })
+    }
+
+    setEvent(new_event)
+  }, [events])
+
   const [users, setUsers] = useState<EventUser[]>([]);
   const reloadEventUsers = () => {
-    if (!event) {
+    if (!user_id || !event) {
       setUsers([]);
       return
     }
@@ -70,42 +100,57 @@ export const Events = ({user_id, registerToEvent}: {user_id: number | undefined,
 
   }, [event, users, user_id])
 
-  return <div className='flex flex-column align-items-center'>
+  return <div className='flex flex-column align-items-center w-full'>
     <Toast ref={toast}/>
 
-    <div>
-      <div className='flex align-items-center mt-4 mb-2'>
+    <div className='m-2'>
+      <div className='flex justify-content-end mt-4 mb-2 gap-2'>
 
-        <label className='font-bold text-xl mx-2 text-200'>Datum: </label>
-        <Dropdown
-          value={event}
-          onChange={(e) => setEvent(e.value)}
-          options={events}
-          optionLabel="date"
-          placeholder="Wähle ein Event"
-          scrollHeight="full"
-          className="max-w-12rem sm:w-full"/>
+        <div className='flex align-items-center flex-wrap gap-2'>
+          <label className='font-bold text-xl text-200'>Datum: </label>
+          <Dropdown
+            value={event}
+            valueTemplate={(e) => e && GetGermanDate(e.date)}
+            itemTemplate={(e) => e && GetGermanDate(e.date)}
+            onChange={(e) => setEvent(e.value)}
+            options={events}
+            optionLabel="date"
+            placeholder="Wähle ein Event"
+            scrollHeight="full"
+            className="max-w-12rem"
+          />
+          <div className='flex-grow-1'/>
 
-        <div className='flex-grow-1'/>
-
-        {event && <>
-          {!event_user && <Register event_id={event.id!} user_id={user_id} toast={toast} registerToEvent={registerToEvent} OnRegister={reloadEventUsers}/>}
-          {event_user && <>
-              <Unregister event_id={event.id!} user_id={user_id!} OnUnRegister={reloadEventUsers}/>
-              <ChangeGuests event_id={event.id!} event_user={event_user} free_slots={free_slots} OnChange={reloadEventUsers}/>
+          {event && <>
+            {!event_user &&
+                <Register event_id={event.id!} user_id={user_id} toast={toast} registerToEvent={registerToEvent}
+                          OnRegister={reloadEventUsers}/>}
+            {event_user && <div className='flex align-items-center flex-wrap gap-2'>
+                <Unregister event_id={event.id!} user_id={user_id!} OnUnRegister={reloadEventUsers}/>
+                <ChangeGuests event_id={event.id!} event_user={event_user} free_slots={free_slots}
+                              OnChange={reloadEventUsers}/>
+            </div>}
           </>}
-        </>}
-
+        </div>
+        {user_id && <Menu setPage={setPage} onLoggedOut={onLoggedOut}/>}
       </div>
 
-      {event && user_id &&
-          <MemberList
-              event={event}
-              users={users}
-              register_count={register_count}
-              wait_count={wait_count}
-              open_count={open_count}
-              self_user_id={user_id}/>
+      {event &&
+          <> {user_id ?
+            <>
+              <Header event={event}/>
+              <MemberList
+                event={event}
+                users={users}
+                register_count={register_count}
+                wait_count={wait_count}
+                open_count={open_count}
+                self_user_id={user_id}/>
+              <EventText event={event}/>
+            </> :
+            <PublicEventText event={event!} wait_count={wait_count} register_count={register_count}/>
+          }
+          </>
       }
     </div>
   </div>
@@ -124,15 +169,18 @@ const MemberList = (
 
 
   const Template = (user: EventUser) => {
-    return (<div className='flex justify-content-center align-items-center'>
-      <EventUserState user={user} />
+    return (<div className='flex justify-content-center align-items-center flex-wrap'>
+      <EventUserState user={user}/>
       <EventUserName user={user} bold={user.user_id == self_user_id}/>
       <div className='flex-grow-1'></div>
-      <EventUserGuests user={user} />
-      <EventUserOpen user={user} />
-      <div className="w-5rem"> <EventUserRole user={user}/> </div>
+      <div className='flex align-items-center flex-wrap'>
+        <EventUserGuests user={user}/>
+        <EventUserOpen user={user}/>
+        <div className="w-5rem"><EventUserRole user={user}/></div>
+      </div>
     </div>)
   }
+
 
   const eventInfo = <label>
     {register_count} / {event.slots} angemeldet --- {wait_count === 1 && wait_count + " wartet --- "}
@@ -140,16 +188,15 @@ const MemberList = (
     Offen mit neuen Personen zu fesseln: {open_count} / {register_count}
   </label>
 
-  return (
-    <div className='border-round bg-white'>
-      <DataScroller
-        value={users}
-        itemTemplate={Template}
-        rows={100}
-        buffer={0.4}
-        header={eventInfo}
-        className="mx-2"/>
-    </div>)
+  return (<div className='border-round bg-white'>
+    <DataScroller
+      value={users}
+      itemTemplate={Template}
+      rows={20}
+      buffer={0.4}
+      header={eventInfo}
+      className="mx-2"/>
+  </div>)
 }
 
 
@@ -176,12 +223,20 @@ const Register = (
     setRegisterPopup(false)
 
     if (guest_amount > 2) {
-      toast.current!.show({ severity: 'error', summary: 'Error', detail: 'Maximal zwei weitere Personen erlaubt.', life: 3000 });
-    }
-    else if (guest_amount < 0) {
-      toast.current!.show({ severity: 'error', summary: 'Error', detail: 'Negative Personenmenge nicht erlaubt.', life: 3000 });
-    }
-    else {
+      toast.current!.show({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Maximal zwei weitere Personen erlaubt.',
+        life: 3000
+      });
+    } else if (guest_amount < 0) {
+      toast.current!.show({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Negative Personenmenge nicht erlaubt.',
+        life: 3000
+      });
+    } else {
       RegisterToEvent(event_id, user_id!, guest_amount, OnRegister)
     }
   }
@@ -217,7 +272,11 @@ const Register = (
   </>)
 }
 
-const Unregister = ({event_id, user_id, OnUnRegister}: {event_id: number, user_id: number, OnUnRegister: () => void}) => {
+const Unregister = ({event_id, user_id, OnUnRegister}: {
+  event_id: number,
+  user_id: number,
+  OnUnRegister: () => void
+}) => {
   const [showUnRegisterPopup, setUnRegisterPopup] = useState<boolean>(false);
 
   const onUnRegisterButton = () => {
@@ -251,11 +310,16 @@ const Unregister = ({event_id, user_id, OnUnRegister}: {event_id: number, user_i
       </div>
     </Dialog>
 
-    <Button onClick={onUnRegisterButton} className='bg-indigo-300 border-indigo-300 m-2'>Abmelden</Button>
+    <Button onClick={onUnRegisterButton} className='bg-indigo-300 border-indigo-300 w-9rem'>Abmelden</Button>
   </>)
 };
 
-const ChangeGuests = ({event_id, event_user, free_slots, OnChange}: {event_id: number, event_user: EventUser, free_slots: number, OnChange: () => void}) => {
+const ChangeGuests = ({event_id, event_user, free_slots, OnChange}: {
+  event_id: number,
+  event_user: EventUser,
+  free_slots: number,
+  OnChange: () => void
+}) => {
   const [showChangeGuestPopup, setChangeGuestPopup] = useState<boolean>(false);
 
   const onChangeGuestButton = () => {
@@ -299,7 +363,7 @@ const ChangeGuests = ({event_id, event_user, free_slots, OnChange}: {event_id: n
               <label>aus der Liste zu schieben.</label>
           </>}
           {free_slots === 0 && can_add_guests > 0 && <>
-          <label className='mt-2 font-bold'>Es ist kein Platz mehr frei</label>
+              <label className='mt-2 font-bold'>Es ist kein Platz mehr frei</label>
               <label className='mt-2'>Du bist zum Event zugelassen</label>
               <label>aber ist kein Platz mehr frei.</label>
               <label>Daher kannst du keine weitere</label>
@@ -316,6 +380,61 @@ const ChangeGuests = ({event_id, event_user, free_slots, OnChange}: {event_id: n
       </div>
     </Dialog>
 
-    <Button onClick={onChangeGuestButton} className='bg-indigo-300 border-indigo-300 m-2'>Begleitung ändern</Button>
+    <Button onClick={onChangeGuestButton} className='bg-indigo-300 border-indigo-300 w-12rem'>Begleitung ändern</Button>
   </>)
+}
+
+const Header = ({event}: { event: RopeEvent }) => {
+  return <div className='flex'>
+    <div className='flex border-round bg-primary my-2 min-h-3rem align-items-center justify-content-center'>
+      <label className='text-2xl font-bold m-3'>Tüdeltreff am {GetGermanDateTime(event.date)}</label>
+    </div>
+  </div>
+}
+
+const EventText = ({event}: { event: RopeEvent }) => {
+  return <div className='border-round bg-primary my-2'>
+    <Markdown
+      className="py-1 mx-2"
+    >{event.description}</Markdown>
+  </div>
+}
+
+const PublicEventText = ({event, register_count, wait_count}: {
+  event: RopeEvent,
+  register_count: number,
+  wait_count: number
+}) => {
+  return <div className='flex flex-column border-round bg-primary my-3'>
+    <div className='flex'>
+      <div className='flex flex-column m-3 w-12rem min-w-max font-bold align-items-center'>
+        <div className='text-6xl mx-2'>
+          <label>{register_count} / </label>
+          <label className='text-4xl'>{event.slots}</label>
+        </div>
+        <div className='text-4xl'>
+          {wait_count == 1 ?
+            <label>1 wartet</label> :
+            <label>{wait_count} warten</label>
+          }
+        </div>
+        <label className='text-4xl mt-4'>{GetGermanTime(event.date)}</label>
+        <label className='text-xl'>{GetGermanDate(event.date)}</label>
+
+      </div>
+      <div className='flex-grow-1'/>
+      <div className='m-2 max-w-20rem border-round surface-card'>
+        <Image
+          src="/logofull.png"
+          alt="Logo"
+          width='90%'
+          className='p-2'
+        />
+      </div>
+    </div>
+
+    <div className='flex-grow-1 mx-3'>
+      <Markdown>{event.description}</Markdown>
+    </div>
+  </div>
 }

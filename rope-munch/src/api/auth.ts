@@ -1,5 +1,5 @@
 import Cookies from 'universal-cookie';
-import {ErrorMessage, GetAPI, PostAPI, ResponseToClass} from "./api";
+import {ErrorMessage, GetAPI, PostAPI, PostAPIWithoutContent, ResponseToClass} from "./api";
 
 class Credentials {
   "email": string
@@ -18,6 +18,13 @@ export const PostLogin = (email: string, password: string, OnLoggedIn: (id: numb
     }, () => {
       console.log("Login error");
     });
+  });
+}
+
+export const PostLogout = (OnLoggedOut: () => void) => {
+  PostAPIWithoutContent("/logout",(r) => {
+    console.log("Logged out");
+    OnLoggedOut();
   });
 }
 

@@ -12,8 +12,18 @@ import {Button} from "primereact/button";
 import {Toast} from "primereact/toast";
 import {UserEmail} from "../components/UserAuthData";
 
+export const AccountPage = ({userId, back}:{userId: number, back: () => void}) => {
+  return (<div className='flex flex-column justify-content-center'>
+    <div className="flex">
+      <Button label={"Back"} onClick={back} className="m-2"/>
+    </div>
 
-export const Account = ({userId, onSave}: {userId: number, onSave: () => void}) => {
+    <Account userId={userId} onSave={back}/>
+  </div>)
+}
+
+
+export const Account = ({userId, onSave}: { userId: number, onSave: () => void }) => {
   const [userData, setUserData] = useState<UserData | undefined>(undefined);
   const [nameValid, setNameValid] = useState<boolean>(true);
   const toast = useRef<Toast>(null);

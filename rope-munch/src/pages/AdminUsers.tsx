@@ -29,7 +29,7 @@ const AdminUsers = ({back}: {back: () => void}) => {
 
     return (
         <div className="card">
-        <Button label={"Back"} onClick={back}/>
+        <Button label={"Back"} className='m-2' onClick={back}/>
         <Accordion>{createTabs()}</Accordion>
       </div>
   )
