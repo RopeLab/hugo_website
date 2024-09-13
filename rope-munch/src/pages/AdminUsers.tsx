@@ -3,6 +3,7 @@ import {GetUserDatas, UserData} from "../api/user_data";
 import { Accordion, AccordionTab } from 'primereact/accordion';
 import {Button} from "primereact/button";
 import {Account} from "./Account";
+import {UserActionView} from "../components/UserAction"
 
 const AdminUsers = ({back}: {back: () => void}) => {
   const [userDatas, setUserDatas] = useState<UserData[]>([]);
@@ -22,6 +23,7 @@ const AdminUsers = ({back}: {back: () => void}) => {
       return (
           <AccordionTab key={userData.user_id} header={header}>
               <Account userId={userData.user_id} onSave={loadUsers}/>
+              <UserActionView user_id={userData.user_id}/>
           </AccordionTab>
       );
     });

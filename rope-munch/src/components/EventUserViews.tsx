@@ -1,14 +1,14 @@
-import { Tag } from 'primereact/tag';
+import {Tag} from 'primereact/tag';
 import {ProgressBar} from "primereact/progressbar";
-import {EventUser} from "../api/event_users";
+import {EventUser, EventUserState} from "../api/event_users";
 import React from "react";
 
 
-export const EventUserState = ({user}: {user: EventUser}) => {
+export const EventUserStateView = ({user}: {user: EventUser}) => {
   return (
     <>
-      { user.state === "Registered" && <Tag value="Registriert" severity="success" />}
-      { user.state === "Waiting" && <Tag value="Warteliste" severity="warning" />}
+      { user.state === EventUserState.Registered && <Tag value="Registriert" severity="success" />}
+      { user.state === EventUserState.Waiting && <Tag value="Warteliste" severity="warning" />}
     </>
   );
 };

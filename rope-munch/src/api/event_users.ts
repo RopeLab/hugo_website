@@ -1,7 +1,13 @@
 import {ErrorMessage, GetAPI, PostAPI, PostAPIWithoutContent, ResponseToClass} from "./api";
 import {UserData} from "./user_data";
 
-type EventUserState = "Registered" | "Waiting" | "Rejected" | "New" | "WaitingNew";
+export enum EventUserState {
+  Registered,
+  Waiting,
+  Rejected,
+  New,
+  WaitingNew,
+}
 
 export class EventUser {
   "user_id": number;

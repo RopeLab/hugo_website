@@ -7,13 +7,20 @@ import {Dialog} from 'primereact/dialog'
 import {Image} from 'primereact/image';
 import Markdown from 'react-markdown'
 import {GetEvents, GetGermanDate, GetGermanDateTime, GetGermanTime, RopeEvent} from "../api/events";
-import {ChangeGuestsOfEvent, EventUser, GetEventUsers, RegisterToEvent, UnRegisterFromEvent} from "../api/event_users";
+import {
+  ChangeGuestsOfEvent,
+  EventUser,
+  EventUserState,
+  GetEventUsers,
+  RegisterToEvent,
+  UnRegisterFromEvent
+} from "../api/event_users";
 import {
   EventUserGuests,
   EventUserName,
   EventUserOpen,
   EventUserRole,
-  EventUserState
+  EventUserStateView
 } from "../components/EventUserViews";
 import Menu from "../components/Menue"
 import {Page} from "../App";
@@ -78,9 +85,9 @@ export const Events = ({user_id, registerToEvent, setPage, onLoggedOut}: {
     let open_count = 0;
     setEventUser(undefined);
     users.forEach((user) => {
-      if (user.state === "Registered") {
+      if (user.state === EventUserState.Registered) {
         register_count += 1 + user.guests;
-      } else if (user.state === "Waiting") {
+      } else if (user.state === EventUserState.Waiting) {
         wait_count += 1 + user.guests;
       }
 
@@ -104,7 +111,7 @@ export const Events = ({user_id, registerToEvent, setPage, onLoggedOut}: {
     <Toast ref={toast}/>
 
     <div className='m-2'>
-      <div className='flex justify-content-end mt-4 mb-2 gap-2'>
+      <div className='flex justify-content-between mt-4 mb-2 gap-2'>
 
         <div className='flex align-items-center flex-wrap gap-2'>
           <label className='font-bold text-xl text-200'>Datum: </label>
@@ -170,7 +177,7 @@ const MemberList = (
 
   const Template = (user: EventUser) => {
     return (<div className='flex justify-content-center align-items-center flex-wrap'>
-      <EventUserState user={user}/>
+      <EventUserStateView user={user}/>
       <EventUserName user={user} bold={user.user_id == self_user_id}/>
       <div className='flex-grow-1'></div>
       <div className='flex align-items-center flex-wrap'>
@@ -353,7 +360,7 @@ const ChangeGuests = ({event_id, event_user, free_slots, OnChange}: {
                   onClick={() => onChangeGuest(2)}>+2</Button>
         </div>
 
-        {event_user.state === "Registered" && <>
+        {event_user.state === EventUserState.Registered && <>
           {free_slots === 1 && can_add_guests > 1 && <>
               <label className='mt-2 font-bold'>Es ist nur 1 Platz frei</label>
               <label className='mt-2'>Du bist zum Event zugelassen</label>
