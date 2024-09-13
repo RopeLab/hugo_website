@@ -1,0 +1,1 @@
+import{c as o,j as e,R as n,P as a,T as c,r as d,E as i}from"./index-Bs4qK_XV.js";const u=({})=>{const[t,s]=d.useState();return e.jsx(i,{user_id:t,registerToEvent:r=>{},setPage:r=>{},onLoggedOut:()=>s(void 0)})},l=o.createRoot(document.getElementById("root"));l.render(e.jsx(n.StrictMode,{children:e.jsx(a,{value:{unstyled:!0,pt:c},children:e.jsx(u,{})})}));
