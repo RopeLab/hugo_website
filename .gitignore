@@ -5,3 +5,6 @@
 hugo.toml
 /node_modules/
 /.direnv/
+
+# Dont commit rope-munch react build files
+rope-munch/build

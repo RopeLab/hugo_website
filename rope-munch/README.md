@@ -27,3 +27,6 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 ## About CORS
 https://stackoverflow.com/questions/13953908/cors-cookie-with-domain-field-is-setting-only-in-firefox-using-jquery-ajax/16634887#16634887
 
+
+## Integration into hugo 
+https://doojin-kang.medium.com/react-app-in-hugo-8ec19b8ea3fd
