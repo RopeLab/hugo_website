@@ -36,10 +36,10 @@ const Login = ({OnLoggedIn}: {OnLoggedIn: (userId: number) => void}) => {
   }
 
   return(
-    <div className='w-full flex justify-content-center text-200'>
+    <div className='w-full flex justify-center text-200'>
       <Toast ref={toast} />
 
-      <div className='flex flex-column'>
+      <div className='flex flex-col'>
         <div className='field grid mt-4'>
           <label htmlFor="email-address" className='col-fixed'>
             Email
@@ -70,16 +70,16 @@ const Login = ({OnLoggedIn}: {OnLoggedIn: (userId: number) => void}) => {
           />
         </div>
 
-        <div className='align-self-end'>
+        <div className='self-end'>
           <Button onClick={onLogin}>Anmelden</Button>
         </div>
 
-        <div className='flex mt-4 justify-content-between'>
+        <div className='flex mt-4 place-content-between'>
           <Button text onClick={() => setShowRest(true)} className="text-white">Passwort vergessen</Button>
         </div>
 
         <Dialog header="Passwort zurück setzen" visible={showRest} onHide={() => setShowRest(false)}>
-          <div className="flex flex-column">
+          <div className="flex flex-col">
             <InputText
               id="email-address"
               name="email"
@@ -89,7 +89,7 @@ const Login = ({OnLoggedIn}: {OnLoggedIn: (userId: number) => void}) => {
               onChange={(e) => setEmail(e.target.value)}
               className="m-2"
             />
-            <Button onClick={onRest} className="align-self-end m-2">Anfrage senden</Button>
+            <Button onClick={onRest} className="self-end m-2">Anfrage senden</Button>
           </div>
         </Dialog>
       </div>

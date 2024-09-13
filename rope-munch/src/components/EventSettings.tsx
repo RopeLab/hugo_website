@@ -18,11 +18,11 @@ export const EventSettings = ({event, setEvent, onSave}: {event: RopeEvent, setE
   const toast = useRef<Toast>(null);
 
   return (
-  <div className='flex flex-column align-items-center'>
+  <div className='flex flex-col items-center'>
     <div>
       <Toast ref={toast}/>
 
-      <div className='flex align-items-center gap-2 m-2 my-4 flex-wrap'>
+      <div className='flex items-center gap-2 m-2 my-4 flex-wrap'>
         <label className='font-bold'>Datum:</label>
         <Calendar showTime value={event.date} onChange={(e) => {
           if (e.value == undefined) {
@@ -32,7 +32,7 @@ export const EventSettings = ({event, setEvent, onSave}: {event: RopeEvent, setE
         }}/>
       </div>
 
-      <div className='flex align-items-center gap-2 m-2 my-4 flex-wrap'>
+      <div className='flex items-center gap-2 m-2 my-4 flex-wrap'>
         <label className='font-bold'>Deadline:</label>
         <Calendar showTime value={event.register_deadline} onChange={(e) => {
           if (e.value == undefined) {
@@ -51,13 +51,13 @@ export const EventSettings = ({event, setEvent, onSave}: {event: RopeEvent, setE
         </div>
       </div>
 
-      <div className='flex align-items-center gap-2 m-2 my-4 flex-wrap'>
+      <div className='flex items-center gap-2 m-2 my-4 flex-wrap'>
         <label className='font-bold'>Sichtbar:</label>
         <Checkbox checked={event.visible} onChange={(e) => {
           setEvent({...event, visible: e.target.checked!})
         }}/>
 
-        <div className='flex gap-2 flex-wrap align-items-center'>
+        <div className='flex gap-2 flex-wrap items-center'>
           <label>ab:</label>
 
           <Calendar showTime value={event.visible_date} onChange={(e) => {
@@ -68,7 +68,7 @@ export const EventSettings = ({event, setEvent, onSave}: {event: RopeEvent, setE
           }}/>
         </div>
 
-        <div className='flex gap-2 flex-wrap align-items-center' >
+        <div className='flex gap-2 flex-wrap items-center' >
           <Button label={"2 Wochen vor Event"} onClick={() => {
             setEvent({...event, visible_date: addDays(event.date, -14)})
           }}/>
@@ -92,13 +92,13 @@ export const EventSettings = ({event, setEvent, onSave}: {event: RopeEvent, setE
         </div>
       </div>
 
-      <div className='flex align-items-center gap-2 m-2 my-4 flex-wrap' >
+      <div className='flex items-center gap-2 m-2 my-4 flex-wrap' >
         <label className='font-bold'>Archviert:</label>
         <Checkbox checked={event.archive} onChange={(e) => {
           setEvent({...event, archive: e.target.checked!})
         }}/>
 
-        <div className='flex gap-2 flex-wrap align-items-center' >
+        <div className='flex gap-2 flex-wrap items-center' >
           <label>ab:</label>
           <Calendar showTime value={event.archive_date} onChange={(e) => {
             if (e.value == undefined) {
@@ -113,7 +113,7 @@ export const EventSettings = ({event, setEvent, onSave}: {event: RopeEvent, setE
         }}/>
       </div>
 
-      <div className='flex align-items-center gap-2 m-2 flex-wrap'>
+      <div className='flex items-center gap-2 m-2 flex-wrap'>
         <label className='font-bold'>Slots:</label>
         <InputText
           type="text"
@@ -121,7 +121,7 @@ export const EventSettings = ({event, setEvent, onSave}: {event: RopeEvent, setE
           onChange={(e) => {
             setEvent({...event, slots: parseNumber(e.target.value)})
           }}
-          className='w-5rem'
+          className='w-5'
         />
       </div>
 

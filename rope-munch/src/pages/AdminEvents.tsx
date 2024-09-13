@@ -82,7 +82,7 @@ const AdminEvents = ({back}: {back: () => void}) => {
 
       <div className="flex">
         <Button label={"Back"} onClick={back} className="m-2"/>
-        <div className="flex-grow-1"/>
+        <div className="grow"/>
         <Button label={"New Event"} onClick={() => setShowNewEvent(true)} className="m-2"/>
       </div>
 

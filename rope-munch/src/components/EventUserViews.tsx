@@ -29,8 +29,8 @@ export const EventUserName = ({user, bold}: {user: EventUser, bold: boolean}) =>
 export const EventUserGuests = ({user}: {user: EventUser}) => {
   return (<>
     {user.guests > 0 ?
-      <Tag value={"+" + user.guests} className='h-2rem w-2rem mx-1 my-2'/>:
-      <div className='mx-1 my-2 h-2rem w-2rem'/>
+      <Tag value={"+" + user.guests} className='h-2 w-2 mx-1 my-2'/>:
+      <div className='mx-1 my-2 h-2 w-2'/>
     }
   </>);
 };
@@ -38,8 +38,8 @@ export const EventUserGuests = ({user}: {user: EventUser}) => {
 export const EventUserOpen = ({user}: {user: EventUser}) => {
   return (<>
     {user.open ?
-      <Tag icon="pi pi-user-plus" severity="info" className='h-2rem w-2rem mx-1 my-2'/> :
-      <div className='mx-1 my-2 h-2rem w-2rem'/>
+      <Tag icon="pi pi-user-plus" severity="info" className='h-2 w-2 mx-1 my-2'/> :
+      <div className='mx-1 my-2 h-2 w-2'/>
     }
   </>);
 };

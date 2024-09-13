@@ -78,7 +78,7 @@ export const UserRoleSetting = ({userData, setUserData}: {
   return <Slider
     value={userData.role_factor}
     onChange={(e) => setUserData({...userData, role_factor: e.value as number})}
-    className='mx-2'
+    className='mx-2 w-full'
   />
 }
 
@@ -93,7 +93,7 @@ export const UserRoleSettingDescriptive = ({userData, setUserData}: {
     <div className='mt-2 mb-3'>
       Darstellung:
       <ProgressBar
-          className="bg-indigo-300 mt-1 mb-4"
+          className="mt-1 mb-4"
           style={{height: '12px'}}
           displayValueTemplate={() => ""}
           value={userData.role_factor}
@@ -106,10 +106,10 @@ export const UserRoleSettingDescriptive = ({userData, setUserData}: {
 }
 
 export const RoleOverview = ({userData}: {userData: UserData}) => {
-  return <div className="w-full flex flex-column">
+  return <div className="w-full flex flex-col">
     <label className="my-1">Rolle: {GetRoleFromPercent(userData.role_factor).name}</label>
     <ProgressBar
-      className="w-full bg-indigo-300"
+      className=""
       style={{height: '12px'}}
       displayValueTemplate={() => ""}
       value={userData.role_factor}
@@ -145,29 +145,25 @@ export const UserShowSetting = ({userData, setUserData}: {userData: UserData, se
       Hier kannst du einstellen was andere Teilnehmer sehen können.
     </div>
 
-    <div className="field grid">
-      <label className="col-fixed w-10rem">Namen / Nick:</label>
+    <div className="grid grid-cols-2">
+      <label className="w-3rem m-2">Namen / Nick:</label>
       <Checkbox
-          onChange={e => setUserData({...userData, show_name: e.checked!})}
-          checked={userData.show_name}
-          className='col'/>
-    </div>
-
-    <div className="field grid">
-      <label className="col-fixed w-10rem">Rolle:</label>
+        onChange={e => setUserData({...userData, show_name: e.checked!})}
+        checked={userData.show_name}
+        className=''/>
+      <label className="w-3rem m-2">Rolle:</label>
       <Checkbox
-          onChange={e => setUserData({...userData, show_role: e.checked!})}
-          checked={userData.show_role}
-          className='col'/>
-    </div>
+        onChange={e => setUserData({...userData, show_role: e.checked!})}
+        checked={userData.show_role}/>
 
-    {userData.open ?
-        <div className="field grid">
-          <label className="col-fixed w-10rem">Mit neuen Personen zu fesseln:</label>
-          <Checkbox
-              onChange={e => setUserData({...userData, show_open: e.checked!})}
-              checked={userData.show_open}
-              className='col'/>
-        </div> : <></>}
+      {userData.open ?
+      <>
+        <label className="w-3rem m-2">Mit neuen Personen zu fesseln:</label>
+        <Checkbox
+          onChange={e => setUserData({...userData, show_open: e.checked!})}
+          checked={userData.show_open}
+          className=''/>
+      </> : <></>}
+    </div>
   </>
 }

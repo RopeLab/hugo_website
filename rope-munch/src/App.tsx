@@ -60,7 +60,7 @@ const App = ({}) => {
       break
   }
 
-  return <div className='w-full'>
+  return <div className='w-full flex flex-col items-center'>
     {content}
   </div>
 }

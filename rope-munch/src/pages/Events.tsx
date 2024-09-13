@@ -107,13 +107,13 @@ export const Events = ({user_id, registerToEvent, setPage, onLoggedOut}: {
 
   }, [event, users, user_id])
 
-  return <div className='flex flex-column align-items-center w-full'>
+  return <div className='flex flex-col items-center w-full'>
     <Toast ref={toast}/>
 
     <div className='m-2'>
-      <div className='flex justify-content-between mt-4 mb-2 gap-2'>
+      <div className='flex place-content-between mt-4 mb-2 gap-2'>
 
-        <div className='flex align-items-center flex-wrap gap-2'>
+        <div className='flex items-center flex-wrap gap-2'>
           <label className='font-bold text-xl text-200'>Datum: </label>
           <Dropdown
             value={event}
@@ -126,13 +126,13 @@ export const Events = ({user_id, registerToEvent, setPage, onLoggedOut}: {
             scrollHeight="full"
             className="max-w-12rem"
           />
-          <div className='flex-grow-1'/>
+          <div className='grow'/>
 
           {event && <>
             {!event_user &&
                 <Register event_id={event.id!} user_id={user_id} toast={toast} registerToEvent={registerToEvent}
                           OnRegister={reloadEventUsers}/>}
-            {event_user && <div className='flex align-items-center flex-wrap gap-2'>
+            {event_user && <div className='flex items-center flex-wrap gap-2'>
                 <Unregister event_id={event.id!} user_id={user_id!} OnUnRegister={reloadEventUsers}/>
                 <ChangeGuests event_id={event.id!} event_user={event_user} free_slots={free_slots}
                               OnChange={reloadEventUsers}/>
@@ -176,14 +176,14 @@ const MemberList = (
 
 
   const Template = (user: EventUser) => {
-    return (<div className='flex justify-content-center align-items-center flex-wrap'>
+    return (<div className='flex justify-center items-center flex-wrap'>
       <EventUserStateView user={user}/>
       <EventUserName user={user} bold={user.user_id == self_user_id}/>
-      <div className='flex-grow-1'></div>
-      <div className='flex align-items-center flex-wrap'>
+      <div className='grow'></div>
+      <div className='flex items-center flex-wrap'>
         <EventUserGuests user={user}/>
         <EventUserOpen user={user}/>
-        <div className="w-5rem"><EventUserRole user={user}/></div>
+        <div className="w-5"><EventUserRole user={user}/></div>
       </div>
     </div>)
   }
@@ -251,14 +251,14 @@ const Register = (
   return (<>
     <Button
       onClick={onRegisterButton}
-      className='w-max bg-indigo-300 border-indigo-300 text-xl'> Teilnehmen</Button>
+      className='w-max text-xl'> Teilnehmen</Button>
     <Dialog
       header="Anmelden:"
       visible={show_register_popup}
       onHide={() => {
         setRegisterPopup(false)
       }}>
-      <div className='flex flex-column mx-2 max-w-30rem'>
+      <div className='flex flex-col mx-2'>
         <label className="mt-2 font-bold">Wen möchtest du anmelden?</label>
         <div className="flex my-2">
           <Button onClick={() => onRegister(0)} className='mx-2'><label className="mr-4">Mich</label></Button>
@@ -303,7 +303,7 @@ const Unregister = ({event_id, user_id, OnUnRegister}: {
         setUnRegisterPopup(false)
       }}
     >
-      <div className='flex flex-column max-w-30rem'>
+      <div className='flex flex-col max-w-30rem'>
         <label>Wenn du dich abmeldest rücken andere Teilnehmer nach.</label>
         <label>
           Bei einem wieder anmelden wirst du ganz unten in der Liste eingetragen
@@ -311,13 +311,13 @@ const Unregister = ({event_id, user_id, OnUnRegister}: {
         </label>
 
         <div className="flex mt-4">
-          <div className="flex-grow-1"></div>
+          <div className="grow"></div>
           <Button onClick={onUnregister}>Abmelden</Button>
         </div>
       </div>
     </Dialog>
 
-    <Button onClick={onUnRegisterButton} className='bg-indigo-300 border-indigo-300 w-9rem'>Abmelden</Button>
+    <Button onClick={onUnRegisterButton} className='w-max'>Abmelden</Button>
   </>)
 };
 
@@ -347,7 +347,7 @@ const ChangeGuests = ({event_id, event_user, free_slots, OnChange}: {
         setChangeGuestPopup(false)
       }}
     >
-      <div className='flex flex-column max-w-30rem'>
+      <div className='flex flex-col max-w-30rem'>
 
         <label className="font-bold">Angemeldet:</label>
         <label>Du + {event_user.guests} weitere Person</label>
@@ -387,13 +387,13 @@ const ChangeGuests = ({event_id, event_user, free_slots, OnChange}: {
       </div>
     </Dialog>
 
-    <Button onClick={onChangeGuestButton} className='bg-indigo-300 border-indigo-300 w-12rem'>Begleitung ändern</Button>
+    <Button onClick={onChangeGuestButton} className='w-max'>Begleitung ändern</Button>
   </>)
 }
 
 const Header = ({event}: { event: RopeEvent }) => {
   return <div className='flex'>
-    <div className='flex border-round bg-primary my-2 min-h-3rem align-items-center justify-content-center'>
+    <div className='flex my-2 items-center justify-center'>
       <label className='text-2xl font-bold m-3'>Tüdeltreff am {GetGermanDateTime(event.date)}</label>
     </div>
   </div>
@@ -412,9 +412,9 @@ const PublicEventText = ({event, register_count, wait_count}: {
   register_count: number,
   wait_count: number
 }) => {
-  return <div className='flex flex-column border-round bg-primary my-3'>
+  return <div className='flex flex-col border-round bg-primary my-3'>
     <div className='flex'>
-      <div className='flex flex-column m-3 w-12rem min-w-max font-bold align-items-center'>
+      <div className='flex flex-col m-3 w-12rem min-w-max font-bold items-center'>
         <div className='text-6xl mx-2'>
           <label>{register_count} / </label>
           <label className='text-4xl'>{event.slots}</label>
@@ -429,7 +429,7 @@ const PublicEventText = ({event, register_count, wait_count}: {
         <label className='text-xl'>{GetGermanDate(event.date)}</label>
 
       </div>
-      <div className='flex-grow-1'/>
+      <div className='grow'/>
       <div className='m-2 max-w-20rem border-round surface-card'>
         <Image
           src="/logofull.png"
@@ -440,7 +440,7 @@ const PublicEventText = ({event, register_count, wait_count}: {
       </div>
     </div>
 
-    <div className='flex-grow-1 mx-3'>
+    <div className='grow mx-3'>
       <Markdown>{event.description}</Markdown>
     </div>
   </div>

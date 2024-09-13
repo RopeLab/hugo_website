@@ -3,17 +3,16 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { PrimeReactProvider } from 'primereact/api';
+import Tailwind from 'primereact/passthrough/tailwind';
 
-import './theme.css'
-import 'primeflex/primeflex.css'
-import 'primeicons/primeicons.css';
+import './output.css'
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
   <React.StrictMode>
-    <PrimeReactProvider>
+    <PrimeReactProvider value={{ unstyled: true, pt: Tailwind }}>
       <App />
     </PrimeReactProvider>
   </React.StrictMode>

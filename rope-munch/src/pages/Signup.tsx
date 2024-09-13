@@ -151,63 +151,65 @@ const Signup = ({OnSignUp, ShowLogIn}: {OnSignUp: (userId: number) => void, Show
     <div>
       <Toast ref={toast} />    
       {step === -2 &&
-        <div className="absolute left-0 flex flex-column w-full" style={{minHeight: "85vh"}}>
-          <label className={"text-7xl text-center text-200 mt-4"} >Warst du schonmal beim Social Rope Lab?</label>
-          <div className={"flex-1 flex justify-content-evenly"}>
-            <div className="flex flex-column justify-content-center">
-              <Button
-                type="submit"
-                className="text-5xl"
-                onClick={() => { setStep(-1) }}>
-                Ja
-              </Button>
+        <div className="flex flex-col w-full">
+          <label className={"text-7xl self-center text-200 mt-4"}>Warst du schonmal beim Social Rope Lab?</label>
+          <div className={"flex justify-evenly"} style={{height:"30rem"}}>
+            <div className="flex flex-col justify-center">
+                <Button
+                    type="submit"
+                    className="text-5xl"
+                    onClick={() => {
+                      setStep(-1)
+                    }}>
+                    Ja
+                </Button>
             </div>
-            <div className="flex flex-column justify-content-center">
-              <Button
-                type="submit"
-                className="text-5xl"
-                onClick={() => {
-                  setWithQuestions(true)
-                  setShowQuestions(true)
-                  setStep(0)
-                }}>
-                Nein
-              </Button>
+            <div className="flex flex-col justify-center">
+                <Button
+                    type="submit"
+                    className="text-5xl"
+                    onClick={() => {
+                      setWithQuestions(true)
+                      setShowQuestions(true)
+                      setStep(0)
+                    }}>
+                    Nein
+                </Button>
             </div>
           </div>
         </div>
       }
 
       {step === -1 &&
-        <div className={"absolute left-0 flex flex-column w-full h-full"}>
-          <label className={"text-7xl text-center text-200 mt-4"}>Hast du schon einen Account?</label>
-          <div className={"flex-1 flex justify-content-evenly"}>
-            <div className="flex flex-column justify-content-center">
-              <Button
-                type="submit"
-                className="text-5xl"
-                onClick={ShowLogIn}>
-                Ja
-              </Button>
-            </div>
-            <div className="flex flex-column justify-content-center">
-              <Button
-                type="submit"
-                className="text-5xl"
-                onClick={() => {
-                  setWithQuestions(false)
-                  setShowQuestions(false)
-                  setStep(0)
-                }}>
-                Nein
-              </Button>
-            </div>
+          <div className="flex flex-col w-full">
+              <label className={"text-7xl self-center text-200 mt-4"}>Hast du schon einen Account?</label>
+              <div className={"flex justify-evenly"} style={{height: "30rem"}}>
+                  <div className="flex flex-col justify-center">
+                      <Button
+                          type="submit"
+                          className="text-5xl"
+                          onClick={ShowLogIn}>
+                          Ja
+                      </Button>
+                  </div>
+                  <div className="flex flex-col justify-center">
+                      <Button
+                          type="submit"
+                          className="text-5xl"
+                          onClick={() => {
+                            setWithQuestions(false)
+                            setShowQuestions(false)
+                            setStep(0)
+                          }}>
+                          Nein
+                      </Button>
+                  </div>
+              </div>
           </div>
-        </div>
       }
 
       {step >= 0 &&
-        <div className='mx-2 m-10 flex flex-column align-items-center'>
+        <div className='mx-2 m-10 flex flex-col items-center'>
           <div className="border-round surface-0 mt-4 w-full" style={{maxWidth: "40rem"}}>
             <form className="m-2">
               <div className='sticky top-0 surface-0 border-round'>
@@ -268,7 +270,7 @@ const Signup = ({OnSignUp, ShowLogIn}: {OnSignUp: (userId: number) => void, Show
                     }
 
                     <div className='flex'>
-                      <div className='flex-grow-1'/>
+                      <div className='grow'/>
                       <Button
                           onClick={() => {
                             if (checkContent()) {
@@ -296,7 +298,7 @@ const Signup = ({OnSignUp, ShowLogIn}: {OnSignUp: (userId: number) => void, Show
                       className='my-4'>
                       Zurück
                     </Button>
-                    <div className='flex-grow-1'/>
+                    <div className='grow'/>
                     <Button
                       onClick={() => {
                         if (checkContent()) {
@@ -321,7 +323,7 @@ const Signup = ({OnSignUp, ShowLogIn}: {OnSignUp: (userId: number) => void, Show
                         className='my-4'>
                       Zurück
                     </Button>
-                    <div className='flex-grow-1'/>
+                    <div className='grow'/>
                     <Button
                         onClick={() => {
                           if (checkContent()) {
@@ -336,7 +338,7 @@ const Signup = ({OnSignUp, ShowLogIn}: {OnSignUp: (userId: number) => void, Show
                   </div>}
 
               {step == 3 &&
-                  <div className='flex flex-column'>
+                  <div className='flex flex-col'>
                     <div className='align-self-center my-4 text-xl'>
                       Bitte lege einen Account mit Email und Passwort an.
                     </div>
@@ -375,7 +377,7 @@ const Signup = ({OnSignUp, ShowLogIn}: {OnSignUp: (userId: number) => void, Show
                           className='my-4'>
                         Zurück
                       </Button>
-                      <div className='flex-grow-1'/>
+                      <div className='grow'/>
                       <Button
                           type="submit"
                           onClick={(e) => {
