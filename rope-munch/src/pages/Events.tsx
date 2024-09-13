@@ -138,8 +138,8 @@ export const Events = ({user_id, registerToEvent, setPage, onLoggedOut}: {
                               OnChange={reloadEventUsers}/>
             </div>}
           </>}
+          {user_id && <Menu setPage={setPage} onLoggedOut={onLoggedOut}/>}
         </div>
-        {user_id && <Menu setPage={setPage} onLoggedOut={onLoggedOut}/>}
       </div>
 
       {event &&
