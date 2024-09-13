@@ -67,8 +67,6 @@ enableEmoji = true
       weight = 10
 
 
-
-
 [security]
   [security.exec]
     allow = ['^(dart-)?sass(-embedded)?$', '^go$', '^npx$', '^postcss$', '^babel$']

@@ -60,13 +60,7 @@ const App = ({}) => {
       break
   }
 
-  return <div className='w-full' style={{
-    backgroundImage: "url('background.jpg')",
-    backgroundPosition: "center",
-    backgroundSize: "cover",
-    backgroundRepeat: "repeat",
-    minHeight: "100vh",
-  }}>
+  return <div className='w-full'>
     {content}
   </div>
 }
