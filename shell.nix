@@ -1,9 +1,9 @@
 with import <nixpkgs> {};
 
 let
-  pkgs_hugo = import (builtins.fetchTarball {
-      url = "https://github.com/NixOS/nixpkgs/archive/0c19708cf035f50d28eb4b2b8e7a79d4dc52f6bb.tar.gz";
-  }) {};
+    pkgs_hugo = import (builtins.fetchTarball {
+        url = "https://github.com/NixOS/nixpkgs/archive/05bbf675397d5366259409139039af8077d695ce.tar.gz";
+    }) {};
 in
 mkShell {
   name = "rope-lab";
