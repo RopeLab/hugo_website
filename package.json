@@ -3,5 +3,20 @@
     "primeflex": "^3.3.1",
     "primeicons": "^7.0.0",
     "primereact": "^10.8.2"
-  }
+  },
+  "name": "hugo_website",
+  "version": "1.0.0",
+  "description": "## Setup add hugo.toml file with the publishDir and hugo_cache you want to use  ```toml baseURL = 'https://hugo.ropelab.uber.space/' languageCode = 'de' title = 'Social Rope Lab' # hugo_cache = '/home/ropelab/tmp' # publishDir = '/var/www/virtual/ropelab/hugo.ropelab.uber.space' hugo_cache = './tmp' publishDir = './result' ```",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/cli": "^7.25.6",
+    "@babel/core": "^7.25.2",
+    "@babel/preset-react": "^7.24.7"
+  },
+  "keywords": []
 }
