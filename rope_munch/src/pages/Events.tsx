@@ -22,8 +22,9 @@ import {
   EventUserRole,
   EventUserStateView
 } from "../components/EventUserViews";
-import Menu from "../components/Menue"
 import {Page} from "../entry_points";
+import AdminMenue from "../components/AdminMenue.tsx";
+import {Logout} from "../components/Logout.tsx";
 
 
 export const Events = ({user_id, registerToEvent, setPage, onLoggedOut}: {
@@ -138,7 +139,11 @@ export const Events = ({user_id, registerToEvent, setPage, onLoggedOut}: {
                               OnChange={reloadEventUsers}/>
             </div>}
           </>}
-          {user_id && <Menu setPage={setPage} onLoggedOut={onLoggedOut}/>}
+          {user_id && <>
+              <AdminMenue setPage={setPage} />
+              <Logout OnLogout={onLoggedOut} />
+          </>}
+
         </div>
       </div>
 
@@ -250,8 +255,9 @@ const Register = (
 
   return (<>
     <Button
+      label="Teilnehmen"
       onClick={onRegisterButton}
-      className='w-max text-xl'> Teilnehmen</Button>
+      className='w-max text-xl'/>
     <Dialog
       header="Anmelden:"
       visible={show_register_popup}
@@ -296,6 +302,10 @@ const Unregister = ({event_id, user_id, OnUnRegister}: {
   }
 
   return (<>
+    <Button
+      label="Abmelden"
+      onClick={onUnRegisterButton}
+      className='w-max'/>
     <Dialog
       header="Willst du dich wirklich von dem Event abmelden?"
       visible={showUnRegisterPopup}
@@ -316,8 +326,6 @@ const Unregister = ({event_id, user_id, OnUnRegister}: {
         </div>
       </div>
     </Dialog>
-
-    <Button onClick={onUnRegisterButton} className='w-max'>Abmelden</Button>
   </>)
 };
 
@@ -340,6 +348,10 @@ const ChangeGuests = ({event_id, event_user, free_slots, OnChange}: {
 
   const can_add_guests = 2 - event_user.guests;
   return (<>
+    <Button
+      label="Begleitung ändern"
+      onClick={onChangeGuestButton}
+      className='w-max'/>
     <Dialog
       header="Begleitung ändern"
       visible={showChangeGuestPopup}
@@ -386,8 +398,6 @@ const ChangeGuests = ({event_id, event_user, free_slots, OnChange}: {
         </div>
       </div>
     </Dialog>
-
-    <Button onClick={onChangeGuestButton} className='w-max'>Begleitung ändern</Button>
   </>)
 }
 

@@ -17,8 +17,11 @@ const App = ({}) => {
   return <>
     {user_id ?
       <> {user_id != "not_logged_in" ?
-        <Account userId={user_id} onSave={() => {
-        }}/> :
+        <Account
+          userId={user_id}
+          onSave={() => {}}
+          onLogout={() => setUserId("not_logged_in")}
+        /> :
         <Login OnLoggedIn={setUserId}/>
       } </>:
       <label>Loading</label>

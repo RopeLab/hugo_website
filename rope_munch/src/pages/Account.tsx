@@ -11,19 +11,10 @@ import {
 import {Button} from "primereact/button";
 import {Toast} from "primereact/toast";
 import {UserEmail} from "../components/UserAuthData";
-
-export const AccountPage = ({userId, back}:{userId: number, back: () => void}) => {
-  return (<div className='flex flex-col justify-center'>
-    <div className="flex">
-      <Button label={"Back"} onClick={back} className="m-2"/>
-    </div>
-
-    <Account userId={userId} onSave={back}/>
-  </div>)
-}
+import {Logout} from "../components/Logout.tsx";
 
 
-export const Account = ({userId, onSave}: { userId: number, onSave: () => void }) => {
+export const Account = ({userId, onSave, onLogout}: { userId: number, onSave: () => void , onLogout: () => void}) => {
   const [userData, setUserData] = useState<UserData | undefined>(undefined);
   const [nameValid, setNameValid] = useState<boolean>(true);
   const toast = useRef<Toast>(null);
@@ -54,8 +45,14 @@ export const Account = ({userId, onSave}: { userId: number, onSave: () => void }
 
   return (
     <div className='flex justify-center'>
-      <div style={{maxWidth: "70"}} className='flex flex-col m-2 w-full surface-0 border-round'>
+      <div style={{maxWidth: "70rem"}} className='flex flex-col m-2 w-full surface-0 border-round'>
         <Toast ref={toast}/>
+
+        <div className="flex justify-end">
+          <Logout OnLogout={onLogout}/>
+        </div>
+
+
         <div className="flex flex-col align-content-center text-l gap-2 mx-2">
           <div className='mt-4 mb-2 text-lg'>
             <label className="mr-2">E-Mail:</label>
@@ -89,7 +86,10 @@ export const Account = ({userId, onSave}: { userId: number, onSave: () => void }
           <UserQuestionSetting userData={userData} setUserData={setUserData}/>
 
           <div className="my-2 flex justify-end">
-            <Button className="text-xl" onClick={on_save}>Speichern</Button>
+            <Button
+              label="Speichern"
+              className="text-xl"
+              onClick={on_save} />
           </div>
         </div>
       </div>

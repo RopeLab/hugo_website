@@ -8,7 +8,6 @@ import '../output.css'
 import {Events} from "../pages/Events.tsx";
 import Login from "../pages/Login.tsx";
 import Signup from "../pages/Signup.tsx";
-import {AccountPage} from "../pages/Account.tsx";
 import AdminUsers from "../pages/AdminUsers.tsx";
 import AdminEvents from "../pages/AdminEvents.tsx";
 import {GetUserId} from "../api/auth.ts";
@@ -17,7 +16,6 @@ export enum Page {
   Events,
   Login,
   Signup,
-  Account,
   AdminUsers,
   AdminEvents,
 }
@@ -60,8 +58,6 @@ const App = ({}) => {
       }}
       ShowLogIn={() => setPage(Page.Login)}
     />
-      break
-    case Page.Account: content = <AccountPage userId={user_id!} back={() => setPage(Page.Events)}/>
       break
     case Page.AdminUsers: content = <AdminUsers back={() => {setPage(Page.Events)}}/>
       break
