@@ -2,9 +2,11 @@ import React, {useEffect, useState} from 'react';
 import ReactDOM from 'react-dom/client';
 import { PrimeReactProvider } from 'primereact/api';
 import Tailwind from 'primereact/passthrough/tailwind';
-
 import '../output.css'
-import {Account} from "../pages/Account.tsx";
+
+import 'primeicons/primeicons.css'
+
+import {AccountPage} from "../pages/Account.tsx";
 import {GetUserId} from "../api/auth.ts";
 import Login from "../pages/Login.tsx";
 
@@ -17,7 +19,7 @@ const App = ({}) => {
   return <>
     {user_id ?
       <> {user_id != "not_logged_in" ?
-        <Account
+        <AccountPage
           userId={user_id}
           onSave={() => {}}
           onLogout={() => setUserId("not_logged_in")}

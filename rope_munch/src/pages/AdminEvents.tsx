@@ -63,15 +63,14 @@ const AdminEvents = ({back}: {back: () => void}) => {
           <EventSettings event={event} setEvent={(newEvent) => {
             events[i] = newEvent;
             setEvents([...events]);
-          }} onSave={() => {
-          }}/>
+          }} onSave={back}/>
         </AccordionTab>
       );
     });
   };
 
   return (
-    <div className='mx-2'>
+    <div className='w-full'>
       <Dialog header="Neues Event" visible={showNewEvent} onHide={() => setShowNewEvent(false)}>
         <EventSettings event={newEvent} setEvent={setNewEvent} onSave={() => {
           setShowNewEvent(false);
@@ -79,13 +78,11 @@ const AdminEvents = ({back}: {back: () => void}) => {
         }}/>
       </Dialog>
 
-
-      <div className="flex">
-        <Button label={"Back"} onClick={back} className="m-2"/>
+      <div className="flex gap-2 my-2">
+        <Button label="Zurück" onClick={back}/>
         <div className="grow"/>
-        <Button label={"New Event"} onClick={() => setShowNewEvent(true)} className="m-2"/>
+        <Button label="New Event" onClick={() => setShowNewEvent(true)}/>
       </div>
-
 
       <Accordion>{createTabs()}</Accordion>
     </div>

@@ -1,4 +1,4 @@
-import {ErrorMessage, GetAPI, PostAPI, ResponseToClass} from "./api";
+import {ErrorMessage, GetAPIAndParse, PostAPI, ResponseToClass} from "./api";
 
 export class UserData {
   "user_id": number
@@ -34,35 +34,11 @@ export const GetUserData = (
   userId: number,
   setUserData: (userData: UserData) => void,
 ) => {
-  GetAPI("/user_data/" + userId, (response) => {
-    if (!response.ok) {
-      ResponseToClass(response, (message: ErrorMessage) => {
-        console.log("Get user data error: " + message.message);
-      }, () => {
-        console.log("No error message!!! This should never happen");
-      });
-    } else {
-      ResponseToClass(response, setUserData, () => {
-        console.log("UserData did not match!!! This should never happen");
-      });
-    }
-  });
+  GetAPIAndParse("/user_data/" + userId, setUserData);
 }
 
 export const GetUserDatas = (
     setUserDatas: (userDatas: UserData[]) => void,
 ) => {
-  GetAPI("/user_data/all", (response) => {
-    if (!response.ok) {
-      ResponseToClass(response, (message: ErrorMessage) => {
-        console.log("Get user data list error: " + message.message);
-      }, () => {
-        console.log("No error message!!! This should never happen");
-      });
-    } else {
-      ResponseToClass(response, setUserDatas, () => {
-        console.log("UserData List did not match!!! This should never happen");
-      });
-    }
-  });
+  GetAPIAndParse("/user_data/all", setUserDatas);
 }

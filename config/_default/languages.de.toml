@@ -16,7 +16,7 @@ title = "Social Rope Lab"
  [author]
    name = "Social Rope Lab"
    #image = "Social Rope Lab Header.png"
-   headline = "I'm only human"
+   headline = "Gestalte den Rope Space, an dem du sein willst!"
    #bio = "A little bit about you"
    links = [
      { email = "mailto:social.ropelab.de" },

@@ -57,7 +57,20 @@ npm run dev-hugo
 
 ### Run test server
 ```shell
-hugo server
+hugo server 
+    --gc 
+    --disableFastRender 
+    --i18n-warnings 
+    --templateMetrics 
+    --templateMetricsHints 
+    --path-warnings 
+    --buildDrafts --buildExpired --buildFuture 
+    --watch 
+    --enableGitInfo 
+    --log true --logFile hugo.log 
+    --verbose 
+    --verboseLog 
+    --debug
 ```
 
 

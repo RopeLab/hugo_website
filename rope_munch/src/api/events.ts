@@ -1,4 +1,4 @@
-import {ErrorMessage, GetAPI, PostAPI, ResponseToClass} from "./api";
+import {ErrorMessage, GetAPIAndParse, PostAPI, ResponseToClass} from "./api";
 
 export class RopeEvent {
   "id": number | undefined;
@@ -103,40 +103,16 @@ export const GetEvent = (
   eventId: number,
   setEvent: (event: RopeEvent) => void,
 ) => {
-  GetAPI("/event/" + eventId, (response) => {
-    if (!response.ok) {
-      ResponseToClass(response, (message: ErrorMessage) => {
-        console.log("Get event error: " + message.message);
-      }, () => {
-        console.log("No error message!!! This should never happen");
-      });
-    } else {
-      ResponseToClass(response, (event: RopeEventFromAPI) => {
-        setEvent(parseEvent(event))
-      }, () => {
-        console.log("Event did not match!!! This should never happen");
-      });
-    }
+  GetAPIAndParse("/event/" + eventId, (event: RopeEventFromAPI) => {
+    setEvent(parseEvent(event))
   });
 }
 
 export const GetEvents = (
     setEvents: (events: RopeEvent[]) => void,
 ) => {
-  GetAPI("/event/all", (response) => {
-    if (!response.ok) {
-      ResponseToClass(response, (message: ErrorMessage) => {
-        console.log("Get event error: " + message.message);
-      }, () => {
-        console.log("No error message!!! This should never happen");
-      });
-    } else {
-      ResponseToClass(response, (events: RopeEventFromAPI[]) => {
-        setEvents(events.map(parseEvent));
-      }, () => {
-        console.log("Events did not match!!! This should never happen");
-      });
-    }
+  GetAPIAndParse("/event/all", (events: RopeEventFromAPI[]) => {
+    setEvents(events.map(parseEvent));
   });
 }
 

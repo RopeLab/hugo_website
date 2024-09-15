@@ -4,6 +4,7 @@ import { PrimeReactProvider } from 'primereact/api';
 import Tailwind from 'primereact/passthrough/tailwind';
 import '../output.css'
 
+import 'primeicons/primeicons.css'
 
 import {Events} from "../pages/Events.tsx";
 import Login from "../pages/Login.tsx";
@@ -11,6 +12,8 @@ import Signup from "../pages/Signup.tsx";
 import AdminUsers from "../pages/AdminUsers.tsx";
 import AdminEvents from "../pages/AdminEvents.tsx";
 import {GetUserId} from "../api/auth.ts";
+
+
 
 export enum Page {
   Events,
@@ -37,10 +40,8 @@ const App = ({}) => {
     case Page.Events:
       content = <Events
         user_id={user_id}
-        registerToEvent={(event_id) => {
-          setRegisterToEventId(event_id);
-          setPage(Page.Signup);
-        }}
+        register_to_event={register_to_event_id}
+        setRegisterToEvent={setRegisterToEventId}
         setPage={setPage}
         onLoggedOut={() => setUserId(undefined)}/>
       break
@@ -49,6 +50,7 @@ const App = ({}) => {
         setUserId(id);
         setPage(Page.Events);
       }}
+      back={() => setPage(Page.Events)}
     />
       break
     case Page.Signup: content = <Signup
@@ -57,6 +59,7 @@ const App = ({}) => {
         setPage(Page.Events);
       }}
       ShowLogIn={() => setPage(Page.Login)}
+      back={() => setPage(Page.Events)}
     />
       break
     case Page.AdminUsers: content = <AdminUsers back={() => {setPage(Page.Events)}}/>
@@ -65,7 +68,8 @@ const App = ({}) => {
       break
   }
 
-  return <div className='w-full flex flex-col items-center'>
+  return <div className='w-full flex flex-col items-center text-left'>
+    <label>bla bla bla bla bla bla bla bla bla bla bla bla need this to keep the content expanded</label>
     {content}
   </div>
 }

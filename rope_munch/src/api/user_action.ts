@@ -1,4 +1,4 @@
-import {ErrorMessage, GetAPI, ResponseToClass} from "./api";
+import {GetAPIAndParse} from "./api";
 export enum EventUserAction {
   Register,
   Unregister,
@@ -20,17 +20,5 @@ export const GetUserActions = (
   userId: number,
   setUserActions: (actions: UserAction[]) => void,
 ) => {
-  GetAPI("/user_action/" + userId + "/all", (response) => {
-    if (!response.ok) {
-      ResponseToClass(response, (message: ErrorMessage) => {
-        console.log("Get user action error: " + message.message);
-      }, () => {
-        console.log("No error message!!! This should never happen");
-      });
-    } else {
-      ResponseToClass(response, setUserActions, () => {
-        console.log("UserAction Array did not match!!! This should never happen");
-      });
-    }
-  });
+  GetAPIAndParse("/user_action/" + userId + "/all", setUserActions);
 }

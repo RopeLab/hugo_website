@@ -27,7 +27,7 @@ const AdminMenue = ({setPage}: {setPage: (page: Page) => void}) => {
     {admin ?
       <>
         <Menu model={items} popup ref={menu} />
-        <Button className='m-2' label={"Admin"} onClick={(e) => {
+        <Button label={"Admin"} onClick={(e) => {
           // @ts-ignore
           menu.current.toggle(e)
         }} />

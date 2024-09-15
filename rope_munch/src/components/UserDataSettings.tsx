@@ -124,8 +124,8 @@ export const UserOpenSetting = ({userData, setUserData}: {userData: UserData, se
     <div className='mt-6 mb-2 text-xl'>
       Hast Interesse mit neuen Personen zu fesseln?
     </div>
-    <div>
-      <label className='mr-2 text-xl'>Ja:</label>
+    <div className="flex items-center justify-between sm:justify-start mr-6">
+      <label className="sm:w-64 m-2">Ja:</label>
       <Checkbox
         onChange={e => {
           setUserData({...userData, open: e.checked!})
@@ -145,25 +145,32 @@ export const UserShowSetting = ({userData, setUserData}: {userData: UserData, se
       Hier kannst du einstellen was andere Teilnehmer sehen können.
     </div>
 
-    <div className="grid grid-cols-2">
-      <label className="w-3rem m-2">Namen / Nick:</label>
-      <Checkbox
-        onChange={e => setUserData({...userData, show_name: e.checked!})}
-        checked={userData.show_name}
-        className=''/>
-      <label className="w-3rem m-2">Rolle:</label>
-      <Checkbox
-        onChange={e => setUserData({...userData, show_role: e.checked!})}
-        checked={userData.show_role}/>
-
-      {userData.open ?
-      <>
-        <label className="w-3rem m-2">Mit neuen Personen zu fesseln:</label>
+    <div className="flex flex-col">
+      <div className="flex items-center justify-between sm:justify-start mr-6">
+        <label className="sm:w-64 m-2">Namen / Nick:</label>
         <Checkbox
-          onChange={e => setUserData({...userData, show_open: e.checked!})}
-          checked={userData.show_open}
+          onChange={e => setUserData({...userData, show_name: e.checked!})}
+          checked={userData.show_name}
           className=''/>
-      </> : <></>}
+      </div>
+
+      <div className="flex items-center justify-between sm:justify-start mr-6">
+        <label className="sm:w-64 m-2">Rolle:</label>
+        <Checkbox
+          onChange={e => setUserData({...userData, show_role: e.checked!})}
+          checked={userData.show_role}/>
+      </div>
+
+      <div className="flex items-center justify-between sm:justify-start mr-6">
+        {userData.open ?
+        <>
+          <label className="sm:w-64 m-2">Mit neuen Personen zu fesseln:</label>
+          <Checkbox
+            onChange={e => setUserData({...userData, show_open: e.checked!})}
+            checked={userData.show_open}
+            className=''/>
+        </> : <></>}
+      </div>
     </div>
   </>
 }

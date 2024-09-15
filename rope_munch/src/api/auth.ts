@@ -1,5 +1,10 @@
-import {ErrorMessage, GetAPI, PostAPI, PostAPIWithoutContent, ResponseToClass} from "./api";
-import {parseNumber} from "../pages/AdminEvents.tsx";
+import {
+  ErrorMessage,
+  GetAPI, GetAPIAndParse,
+  PostAPI,
+  PostAPIWithoutContent,
+  ResponseToClass
+} from "./api";
 
 class Credentials {
   "email": string
@@ -75,17 +80,5 @@ export const GetEmail = (
     userId: number,
     setEmail: (email: string) => void,
 ) => {
-  GetAPI("/user/" + userId + "/email", (response) => {
-    if (!response.ok) {
-      ResponseToClass(response, (message: ErrorMessage) => {
-        console.log("Get email error: " + message.message);
-      }, () => {
-        console.log("No error message!!! This should never happen");
-      });
-    } else {
-      ResponseToClass(response, setEmail, () => {
-        console.log("Email did not match!!! This should never happen");
-      });
-    }
-  });
+  GetAPIAndParse("/user/" + userId + "/email", setEmail);
 }

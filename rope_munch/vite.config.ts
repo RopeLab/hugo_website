@@ -24,12 +24,18 @@ export default defineConfig({
     {
       name: 'push_to_hugo',
       closeBundle: async () => {
-        fs.rmSync(static_dir, { recursive: true, force: true });
+        if (fs.existsSync(static_dir)) {
+          fs.rmSync(static_dir, { recursive: true, force: true });
+        }
+
         fs.mkdirSync(static_dir)
         fs.cpSync(result_dir, static_dir, { recursive: true });
 
-        index_files.forEach((file) => {
-          fs.rmSync(path.join(static_dir, file))
+        index_files.forEach((file: string) => {
+          if (fs.existsSync(path.join(static_dir, file))) {
+            fs.rmSync(path.join(static_dir, file))
+          }
+
           fs.cpSync(path.join(result_dir, file), path.join(short_codes_dir, file));
         })
       }

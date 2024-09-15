@@ -1,4 +1,4 @@
-import React, {RefObject, useEffect, useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {Dropdown} from 'primereact/dropdown';
 import {Toast} from 'primereact/toast';
 import {DataScroller} from 'primereact/datascroller';
@@ -6,11 +6,11 @@ import {Button} from 'primereact/button';
 import {Dialog} from 'primereact/dialog'
 import {Image} from 'primereact/image';
 import Markdown from 'react-markdown'
-import {GetEvents, GetGermanDate, GetGermanDateTime, GetGermanTime, RopeEvent} from "../api/events";
+import {GetGermanDate, GetGermanDateTime, GetGermanTime} from "../api/events";
 import {
   ChangeGuestsOfEvent,
   EventUser,
-  EventUserState,
+  EventUserState, GetEventUser,
   GetEventUsers,
   RegisterToEvent,
   UnRegisterFromEvent
@@ -25,160 +25,170 @@ import {
 import {Page} from "../entry_points";
 import AdminMenue from "../components/AdminMenue.tsx";
 import {Logout} from "../components/Logout.tsx";
+import {
+  GetEventDates,
+  GetLoggedInEvent,
+  GetPublicEvent,
+  LoggedInRopeEvent,
+  PublicRopeEvent,
+  RopeEventDate
+} from "../api/event_public.ts";
+import Loading from "../components/Loading.tsx";
 
 
-export const Events = ({user_id, registerToEvent, setPage, onLoggedOut}: {
+export const Events = ({user_id, register_to_event, setRegisterToEvent, setPage, onLoggedOut}: {
   user_id: number | undefined,
-  registerToEvent: (event_id: number) => void,
+  register_to_event: number | undefined
+  setRegisterToEvent: (event_id: number | undefined) => void,
   setPage: (page: Page) => void,
   onLoggedOut: () => void
 }) => {
-
-  const toast = useRef<Toast>(null);
-
-  const [events, setEvents] = useState<RopeEvent[]>([]);
+  const [event_dates, setEventDates] = useState<RopeEventDate[]>([]);
 
   useEffect(() => {
-    GetEvents(setEvents);
+    GetEventDates(setEventDates);
   }, []);
 
-  const [event, setEvent] = useState<RopeEvent | undefined>(undefined);
+  const [event_date, setEventDate] = useState<RopeEventDate | undefined>(undefined);
 
   useEffect(() => {
-    let new_event = events.find((test_event) => {
-      return event != null && test_event.id === event.id
-    })
+    let new_event;
+
+    if (register_to_event) {
+      new_event = event_dates.find((test_event) => {
+        return event_date != null && test_event.id === register_to_event
+      })
+    }
 
     if (new_event == null) {
-      new_event = events[0]
+      new_event = event_dates.find((test_event) => {
+        return event_date != null && test_event.id === event_date.id
+      })
+    }
+
+    if (new_event == null) {
+      new_event = event_dates[0]
 
       // Find the next event
-      events.forEach(event => {
+      event_dates.forEach(event => {
         if (new_event!.date > event.date && event.date.getUTCDate() >= Date.now()) {
           new_event = event
         }
       })
     }
 
-    setEvent(new_event)
-  }, [events])
+    setEventDate(new_event)
+  }, [event_dates])
 
-  const [users, setUsers] = useState<EventUser[]>([]);
-  const reloadEventUsers = () => {
-    if (!user_id || !event) {
+  const [public_event_data, setPublicEventData] = useState<PublicRopeEvent | undefined>(undefined)
+  const [logged_in_event_data, setLoggedInEventData] = useState<LoggedInRopeEvent | undefined>(undefined)
+  const [event_user, setEventUser] = useState<EventUser | undefined | "not_registered">(undefined)
+  const [users, setUsers] = useState<EventUser[]>([])
+
+  useEffect(() => {
+    if (!event_date) {
+      setPublicEventData(undefined);
+      setLoggedInEventData(undefined);
       setUsers([]);
       return
     }
-    GetEventUsers(event.id!, setUsers)
-  }
-  useEffect(() => reloadEventUsers(), [event])
 
-  const [register_count, setRegisterCount] = useState<number>(0);
-  const [wait_count, setWaitCount] = useState<number>(0);
-  const [open_count, setOpenCount] = useState<number>(0);
-  const [free_slots, setFreeSlots] = useState<number>(0);
-  const [event_user, setEventUser] = useState<EventUser | undefined>(undefined);
+    GetPublicEvent(event_date.id, setPublicEventData)
+
+    if (user_id) {
+      GetLoggedInEvent(event_date.id, setLoggedInEventData);
+      GetEventUser(event_date.id, user_id, setEventUser);
+      GetEventUsers(event_date.id, setUsers);
+    } else {
+      setLoggedInEventData(undefined);
+      setEventUser(undefined);
+      setUsers([])
+    }
+  }, [event_date, user_id])
 
   useEffect(() => {
+    if (!event_user || event_user == "not_registered") {
+      return
+    }
 
-    let register_count = 0;
-    let wait_count = 0;
-    let open_count = 0;
-    setEventUser(undefined);
-    users.forEach((user) => {
-      if (user.state === EventUserState.Registered) {
-        register_count += 1 + user.guests;
-      } else if (user.state === EventUserState.Waiting) {
-        wait_count += 1 + user.guests;
-      }
+    setRegisterToEvent(undefined)
+  }, [event_user])
 
-      if (user.open) {
-        open_count += 1;
-      }
+  const reloadUsers = () => {
+    if (!event_date || !user_id) {
+      setEventUser(undefined);
+      setUsers([]);
+      return
+    }
 
-      if (user.user_id === user_id) {
-        setEventUser(user);
-      }
-    });
+    GetEventUser(event_date.id, user_id, setEventUser);
+    GetEventUsers(event_date.id, setUsers);
+  }
 
-    setRegisterCount(register_count);
-    setWaitCount(wait_count);
-    setOpenCount(open_count);
-    setFreeSlots(!event ? 0 : event.slots - register_count)
+  return <div className='flex flex-col gap-2 w-full'>
+    {user_id && <div className="flex flex-wrap justify-end gap-2">
+      <AdminMenue setPage={setPage}/>
+      <Logout OnLogout={onLoggedOut}/>
+    </div>}
 
-  }, [event, users, user_id])
+    <div className='flex items-center gap-2 w-full flex-wrap md:flex-nowrap'>
+      <label className='font-bold text-xl'>Datum: </label>
+      <Dropdown
+        value={event_date}
+        valueTemplate={(e) => e && GetGermanDate(e.date)}
+        itemTemplate={(e) => e && GetGermanDate(e.date)}
+        onChange={(e) => setEventDate(e.value)}
+        options={event_dates}
+        optionLabel="date"
+        placeholder="Wähle ein Event"
+        scrollHeight="full"
+      />
+      <div className='grow'/>
 
-  return <div className='flex flex-col items-center w-full'>
-    <Toast ref={toast}/>
-
-    <div className='m-2'>
-      <div className='flex place-content-between mt-4 mb-2 gap-2'>
-
-        <div className='flex items-center flex-wrap gap-2'>
-          <label className='font-bold text-xl text-200'>Datum: </label>
-          <Dropdown
-            value={event}
-            valueTemplate={(e) => e && GetGermanDate(e.date)}
-            itemTemplate={(e) => e && GetGermanDate(e.date)}
-            onChange={(e) => setEvent(e.value)}
-            options={events}
-            optionLabel="date"
-            placeholder="Wähle ein Event"
-            scrollHeight="full"
-            className="max-w-12rem"
-          />
-          <div className='grow'/>
-
-          {event && <>
-            {!event_user &&
-                <Register event_id={event.id!} user_id={user_id} toast={toast} registerToEvent={registerToEvent}
-                          OnRegister={reloadEventUsers}/>}
-            {event_user && <div className='flex items-center flex-wrap gap-2'>
-                <Unregister event_id={event.id!} user_id={user_id!} OnUnRegister={reloadEventUsers}/>
-                <ChangeGuests event_id={event.id!} event_user={event_user} free_slots={free_slots}
-                              OnChange={reloadEventUsers}/>
-            </div>}
+      {event_date && <>
+        {event_user || !user_id ? <>
+          {event_user == "not_registered" || !user_id ? <>
+            <Register
+            event_id={event_date.id!}
+            user_id={user_id}
+            register_to_event={register_to_event}
+            setRegisterToEvent={setRegisterToEvent}
+            setPage={setPage}
+            OnRegister={reloadUsers}/>
+            </> : <>
+          {logged_in_event_data ? <div className='flex justify-items-center flex-wrap md:flex-nowrap gap-2'>
+            <Unregister event_id={event_date.id!} user_id={user_id!} OnUnRegister={reloadUsers}/>
+          <ChangeGuests event_id={event_date.id!} event_user={event_user!} free_slots={logged_in_event_data.slots - logged_in_event_data.register_count}
+                                                  OnChange={reloadUsers}/>
+            </div>:
+            <Loading/>}
           </>}
-          {user_id && <>
-              <AdminMenue setPage={setPage} />
-              <Logout OnLogout={onLoggedOut} />
-          </>}
-
-        </div>
-      </div>
-
-      {event &&
-          <> {user_id ?
-            <>
-              <Header event={event}/>
-              <MemberList
-                event={event}
-                users={users}
-                register_count={register_count}
-                wait_count={wait_count}
-                open_count={open_count}
-                self_user_id={user_id}/>
-              <EventText event={event}/>
-            </> :
-            <PublicEventText event={event!} wait_count={wait_count} register_count={register_count}/>
-          }
-          </>
-      }
+        </> : <>
+          <Loading/>
+        </>}
+      </>}
     </div>
-  </div>
+
+    {logged_in_event_data ? <>
+      <Header event_date={event_date!}/>
+      <MemberList users={users} logged_in_event={logged_in_event_data} self_user_id={user_id!}/>
+      <EventText logged_in_event={logged_in_event_data}/>
+    </> : <>
+      {public_event_data ? <>
+        <PublicEventText event_date={event_date!} public_event={public_event_data}/>
+      </> : <>
+        <Loading/>
+      </>}
+    </>}
+</div>
 }
 
-const MemberList = (
-  {event, users, register_count, wait_count, open_count, self_user_id}:
-    {
-      event: RopeEvent,
-      users: EventUser[],
-      register_count: number,
-      wait_count: number,
-      open_count: number,
-      self_user_id: number
-    }) => {
 
+const MemberList = ({users, logged_in_event, self_user_id}: {
+  users: EventUser[],
+  logged_in_event: LoggedInRopeEvent,
+  self_user_id: number
+}) => {
 
   const Template = (user: EventUser) => {
     return (<div className='flex justify-center items-center flex-wrap'>
@@ -188,16 +198,15 @@ const MemberList = (
       <div className='flex items-center flex-wrap'>
         <EventUserGuests user={user}/>
         <EventUserOpen user={user}/>
-        <div className="w-5"><EventUserRole user={user}/></div>
+        <div className="w-24"><EventUserRole user={user}/></div>
       </div>
     </div>)
   }
 
-
   const eventInfo = <label>
-    {register_count} / {event.slots} angemeldet --- {wait_count === 1 && wait_count + " wartet --- "}
-    {wait_count > 1 && wait_count + " warten --- "}
-    Offen mit neuen Personen zu fesseln: {open_count} / {register_count}
+    {logged_in_event.register_count} / {logged_in_event.slots} angemeldet --- {logged_in_event.wait_count === 1 && logged_in_event.wait_count + " wartet --- "}
+    {logged_in_event.wait_count > 1 && logged_in_event.wait_count + " warten --- "}
+    Offen mit neuen Personen zu fesseln: {logged_in_event.open_count} / {logged_in_event.register_count}
   </label>
 
   return (<div className='border-round bg-white'>
@@ -206,33 +215,38 @@ const MemberList = (
       itemTemplate={Template}
       rows={20}
       buffer={0.4}
-      header={eventInfo}
-      className="mx-2"/>
+      header={eventInfo}/>
   </div>)
 }
 
 
 const Register = (
-  {toast, user_id, event_id, registerToEvent, OnRegister}:
+  {user_id, event_id, register_to_event, setRegisterToEvent, setPage, OnRegister}:
     {
-      toast: RefObject<Toast>,
       user_id: number | undefined,
       event_id: number,
-      registerToEvent: (event_id: number) => void,
+      register_to_event: number | undefined,
+      setRegisterToEvent: (event_id: number | undefined) => void,
+      setPage: (page: Page) => void
       OnRegister: () => void
     }) => {
-  const [show_register_popup, setRegisterPopup] = useState<boolean>(false);
+  const toast = useRef<Toast>(null);
+  const [show_register_popup, setRegisterPopup] = useState<boolean>(
+    register_to_event != undefined && user_id != undefined);
 
   const onRegisterButton = () => {
     if (!user_id) {
-      registerToEvent(event_id);
+      setRegisterToEvent(event_id);
+      setPage(Page.Signup);
       return
     }
+
     setRegisterPopup(true)
   }
 
   const onRegister = (guest_amount: number) => {
     setRegisterPopup(false)
+    setRegisterToEvent(undefined)
 
     if (guest_amount > 2) {
       toast.current!.show({
@@ -254,6 +268,7 @@ const Register = (
   }
 
   return (<>
+    <Toast ref={toast}/>
     <Button
       label="Teilnehmen"
       onClick={onRegisterButton}
@@ -263,13 +278,14 @@ const Register = (
       visible={show_register_popup}
       onHide={() => {
         setRegisterPopup(false)
+        setRegisterToEvent(undefined)
       }}>
       <div className='flex flex-col mx-2'>
         <label className="mt-2 font-bold">Wen möchtest du anmelden?</label>
-        <div className="flex my-2">
-          <Button onClick={() => onRegister(0)} className='mx-2'><label className="mr-4">Mich</label></Button>
-          <Button onClick={() => onRegister(1)} className='mx-2'>Mich + 1 weitere</Button>
-          <Button onClick={() => onRegister(2)} className='mx-2'>Mich + 2 weitere</Button>
+        <div className="flex my-2 gap-2">
+          <Button onClick={() => onRegister(0)}><label className="mr-4">Mich</label></Button>
+          <Button onClick={() => onRegister(1)}>Mich + 1 weitere</Button>
+          <Button onClick={() => onRegister(2)}>Mich + 2 weitere</Button>
         </div>
 
         <label>Begleiter brauchen sich nicht selbst anmelden.</label>
@@ -401,42 +417,37 @@ const ChangeGuests = ({event_id, event_user, free_slots, OnChange}: {
   </>)
 }
 
-const Header = ({event}: { event: RopeEvent }) => {
-  return <div className='flex'>
-    <div className='flex my-2 items-center justify-center'>
-      <label className='text-2xl font-bold m-3'>Tüdeltreff am {GetGermanDateTime(event.date)}</label>
-    </div>
+const Header = ({event_date}: { event_date: RopeEventDate }) => {
+  return <div className='flex flex-wrap justify-center md:justify-start gap-2 text-2xl font-bold my-3'>
+    <label>Tüdeltreff am </label>
+    <label> {GetGermanDateTime(event_date.date)}</label>
   </div>
 }
 
-const EventText = ({event}: { event: RopeEvent }) => {
+const EventText = ({logged_in_event}: { logged_in_event: LoggedInRopeEvent }) => {
   return <div className='border-round bg-primary my-2'>
     <Markdown
-      className="py-1 mx-2"
-    >{event.description}</Markdown>
+      className="py-1"
+    >{logged_in_event.description}</Markdown>
   </div>
 }
 
-const PublicEventText = ({event, register_count, wait_count}: {
-  event: RopeEvent,
-  register_count: number,
-  wait_count: number
-}) => {
+const PublicEventText = ({ event_date, public_event }: { event_date: RopeEventDate, public_event: PublicRopeEvent }) => {
   return <div className='flex flex-col border-round bg-primary my-3'>
     <div className='flex'>
-      <div className='flex flex-col m-3 w-12rem min-w-max font-bold items-center'>
+      <div className='flex flex-col my-3 w-12rem min-w-max font-bold items-center'>
         <div className='text-6xl mx-2'>
-          <label>{register_count} / </label>
-          <label className='text-4xl'>{event.slots}</label>
+          <label>{public_event.register_count} / </label>
+          <label className='text-4xl'>{public_event.slots}</label>
         </div>
         <div className='text-4xl'>
-          {wait_count == 1 ?
+          {public_event.wait_count == 1 ?
             <label>1 wartet</label> :
-            <label>{wait_count} warten</label>
+            <label>{public_event.wait_count} warten</label>
           }
         </div>
-        <label className='text-4xl mt-4'>{GetGermanTime(event.date)}</label>
-        <label className='text-xl'>{GetGermanDate(event.date)}</label>
+        <label className='text-4xl mt-4'>{GetGermanTime(event_date.date)}</label>
+        <label className='text-xl'>{GetGermanDate(event_date.date)}</label>
 
       </div>
       <div className='grow'/>
@@ -450,8 +461,8 @@ const PublicEventText = ({event, register_count, wait_count}: {
       </div>
     </div>
 
-    <div className='grow mx-3'>
-      <Markdown>{event.description}</Markdown>
+    <div>
+      <Markdown>{public_event.description}</Markdown>
     </div>
   </div>
 }

@@ -121,7 +121,7 @@ export const EventSettings = ({event, setEvent, onSave}: {event: RopeEvent, setE
           onChange={(e) => {
             setEvent({...event, slots: parseNumber(e.target.value)})
           }}
-          className='w-5'
+          className='w-20'
         />
       </div>
 

@@ -15,7 +15,7 @@ import {
   UserRoleSettingDescriptive, UserShowSetting
 } from "../components/UserDataSettings";
 
-const Signup = ({OnSignUp, ShowLogIn}: {OnSignUp: (userId: number) => void, ShowLogIn: () => void}) => {
+const Signup = ({OnSignUp, ShowLogIn, back}: {OnSignUp: (userId: number) => void, ShowLogIn: () => void, back: () => void}) => {
   const [step, setStep] = useState(-2)
 
   const [userData, setUserData] = useState<UserData>({
@@ -157,24 +157,22 @@ const Signup = ({OnSignUp, ShowLogIn}: {OnSignUp: (userId: number) => void, Show
             <div className="flex flex-col justify-center">
                 <Button
                     type="submit"
-                    className="text-5xl"
+                    className="text-xl h-32 w-40"
+                    label="Ja"
                     onClick={() => {
                       setStep(-1)
-                    }}>
-                    Ja
-                </Button>
+                    }}/>
             </div>
             <div className="flex flex-col justify-center">
                 <Button
                     type="submit"
-                    className="text-5xl"
+                    className="text-xl h-32 w-40"
+                    label="Nein"
                     onClick={() => {
                       setWithQuestions(true)
                       setShowQuestions(true)
                       setStep(0)
-                    }}>
-                    Nein
-                </Button>
+                    }}/>
             </div>
           </div>
         </div>
@@ -187,22 +185,20 @@ const Signup = ({OnSignUp, ShowLogIn}: {OnSignUp: (userId: number) => void, Show
                   <div className="flex flex-col justify-center">
                       <Button
                           type="submit"
-                          className="text-5xl"
-                          onClick={ShowLogIn}>
-                          Ja
-                      </Button>
+                          className="text-xl h-32 w-40"
+                          label="Ja"
+                          onClick={ShowLogIn}/>
                   </div>
                   <div className="flex flex-col justify-center">
                       <Button
                           type="submit"
-                          className="text-5xl"
+                          className="text-xl h-32 w-40"
+                          label="Nein"
                           onClick={() => {
                             setWithQuestions(false)
                             setShowQuestions(false)
                             setStep(0)
-                          }}>
-                          Nein
-                      </Button>
+                          }}/>
                   </div>
               </div>
           </div>
@@ -270,6 +266,13 @@ const Signup = ({OnSignUp, ShowLogIn}: {OnSignUp: (userId: number) => void, Show
                     }
 
                     <div className='flex'>
+                      <Button
+                        onClick={() => {
+                          back()
+                        }}
+                        className='mt-4'>
+                        Zurück
+                      </Button>
                       <div className='grow'/>
                       <Button
                           onClick={() => {
@@ -278,7 +281,7 @@ const Signup = ({OnSignUp, ShowLogIn}: {OnSignUp: (userId: number) => void, Show
                             }
                           }
                           }
-                          className='my-4'>
+                          className='mt-4'>
                         Weiter
                       </Button>
                     </div>
@@ -295,7 +298,7 @@ const Signup = ({OnSignUp, ShowLogIn}: {OnSignUp: (userId: number) => void, Show
                       onClick={() => {
                         setStep(0)
                       }}
-                      className='my-4'>
+                      className='mt-4'>
                       Zurück
                     </Button>
                     <div className='grow'/>
@@ -306,7 +309,7 @@ const Signup = ({OnSignUp, ShowLogIn}: {OnSignUp: (userId: number) => void, Show
                         }
                       }
                       }
-                      className='my-4'>
+                      className='mt-4'>
                       Weiter
                     </Button>
                   </div>
@@ -320,7 +323,7 @@ const Signup = ({OnSignUp, ShowLogIn}: {OnSignUp: (userId: number) => void, Show
                   <div className='flex'>
                     <Button
                         onClick={() => {setStep(1)}}
-                        className='my-4'>
+                        className='mt-4'>
                       Zurück
                     </Button>
                     <div className='grow'/>
@@ -331,7 +334,7 @@ const Signup = ({OnSignUp, ShowLogIn}: {OnSignUp: (userId: number) => void, Show
                           }
                         }
                         }
-                        className='my-4'>
+                        className='mt-4'>
                       Weiter
                     </Button>
                   </div>
@@ -374,7 +377,7 @@ const Signup = ({OnSignUp, ShowLogIn}: {OnSignUp: (userId: number) => void, Show
                     <div className='flex'>
                       <Button
                           onClick={() => {setStep(2)}}
-                          className='my-4'>
+                          className='mt-4'>
                         Zurück
                       </Button>
                       <div className='grow'/>
@@ -387,7 +390,7 @@ const Signup = ({OnSignUp, ShowLogIn}: {OnSignUp: (userId: number) => void, Show
                               onSubmit()
                             }
                           }}
-                          className='my-4'>
+                          className='mt-4'>
                         Account erstellen
                       </Button>
                     </div>

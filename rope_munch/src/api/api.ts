@@ -1,3 +1,4 @@
+
 export const BACKEND_URL = "http://localhost:3001"
 
 export class ErrorMessage {
@@ -61,6 +62,38 @@ export const ResponseToClass = <Result>(
     } catch (_) {
       OnErr();
     }
+  });
+}
+
+export const PrintPossibleError = (response: Response, OnOk: (response: Response) => void) => {
+  if (!response.ok) {
+    ResponseToClass(response, (message: ErrorMessage) => {
+      console.log("Error: " + message.message);
+    }, () => {
+      console.log("No error message!!! This should never happen");
+    });
+  } else {
+    OnOk(response);
+  }
+}
+
+export const PrintPossibleErrorOrParseData = <Result>(response: Response, OnOk: (result: Result) => void) => {
+  if (!response.ok) {
+    ResponseToClass(response, (message: ErrorMessage) => {
+      console.log("Error: " + message.message);
+    }, () => {
+      console.log("No error message!!! This should never happen");
+    });
+  } else {
+    ResponseToClass(response, OnOk, () => {
+      console.log("Classes did not match!!! This should never happen");
+    });
+  }
+}
+
+export const GetAPIAndParse = <Result>(route: string, OnOk: (result: Result) => void) => {
+  GetAPI(route, (response) => {
+    PrintPossibleErrorOrParseData(response, OnOk);
   });
 }
 
