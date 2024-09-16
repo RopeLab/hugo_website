@@ -14,6 +14,7 @@ import {
   UserQuestionSetting,
   UserRoleSettingDescriptive, UserShowSetting
 } from "../components/UserDataSettings";
+import {FetlifeLink} from "../components/EventUserViews.tsx";
 
 const Signup = ({OnSignUp, ShowLogIn, back}: {OnSignUp: (userId: number) => void, ShowLogIn: () => void, back: () => void}) => {
   const [step, setStep] = useState(-2)
@@ -30,6 +31,7 @@ const Signup = ({OnSignUp, ShowLogIn, back}: {OnSignUp: (userId: number) => void
     show_name: false,
     show_role: false,
     show_open: false,
+    show_fetlife: false,
     new: false,
   });
 
@@ -148,7 +150,7 @@ const Signup = ({OnSignUp, ShowLogIn, back}: {OnSignUp: (userId: number) => void
   ];
 
   return (
-    <div>
+    <div className="w-full">
       <Toast ref={toast} />    
       {step === -2 &&
         <div className="flex flex-col w-full">
@@ -224,15 +226,20 @@ const Signup = ({OnSignUp, ShowLogIn, back}: {OnSignUp: (userId: number) => void
                       Wir verifizieren jede Person, bevor sie zu den Events zugelassen wird.
                     </div>
 
-                    <div className='mt-4 mb-2'>
+                    <div className='mt-4 mb-2 text-lg'>
                       Nenne uns einen Namen oder Scenen-Nick an dem wir dich identifzieren können.
                     </div>
                     <UserNameSetting userData={userData} setUserData={setUserData} valid={nameValid} setValid={setNameValid} />
 
-                    <div className='mt-4 mb-2'>
+                    <div className='mt-4 mb-2 text-lg'>
                       Hast du einen Fetlife Aoccunt?
                     </div>
                     <UserFetlifeSetting userData={userData} setUserData={setUserData} />
+
+                    {userData.fetlife_name != "" && <div className='mt-4 mb-2 text-lg'>
+                      Teste ob der Link funktioniert:
+                    </div>}
+                    <FetlifeLink fetlife_name={userData.fetlife_name}/>
 
                     {withQuestions ?
                         <div className='my-4 text-xl'>

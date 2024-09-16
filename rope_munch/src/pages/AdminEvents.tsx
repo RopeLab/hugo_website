@@ -25,7 +25,8 @@ const AdminEvents = ({back}: {back: () => void}) => {
     description: "Beschreibung",
     id: undefined,
     register_deadline: new Date(),
-    slots: 50,
+    slots: 45,
+    new_slots: 5,
     visible: false,
     visible_date: new Date()
 
@@ -38,8 +39,6 @@ const AdminEvents = ({back}: {back: () => void}) => {
 
   const createTabs = () => {
     return events.map((event, i) => {
-
-      console.log(event)
       const header = GetGermanDateTime(event.date);
       return (
         <AccordionTab key={header} header={header}>

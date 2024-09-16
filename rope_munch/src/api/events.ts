@@ -7,6 +7,7 @@ export class RopeEvent {
   "date": Date;
   "archive_date": Date;
   "slots": number;
+  "new_slots": number;
   "visible": boolean;
   "archive": boolean;
   "description": string;
@@ -19,6 +20,7 @@ export class RopeEventFromAPI {
   "date": string;
   "archive_date": string;
   "slots": number;
+  "new_slots": number;
   "visible": boolean;
   "archive": boolean;
   "description": string;

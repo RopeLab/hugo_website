@@ -27,8 +27,6 @@ cd ..
 git clone git@github.com:RopeLab/backend.git
 ```
 
-
-
 ## Start full dev env
 ### shh tunnel database
 ```shell

@@ -123,6 +123,15 @@ export const EventSettings = ({event, setEvent, onSave}: {event: RopeEvent, setE
           }}
           className='w-20'
         />
+        <label className='font-bold'>New:</label>
+        <InputText
+          type="text"
+          value={event.new_slots.toString()}
+          onChange={(e) => {
+            setEvent({...event, new_slots: parseNumber(e.target.value)})
+          }}
+          className='w-20'
+        />
       </div>
 
       <InputTextarea

@@ -805,6 +805,10 @@ video {
     margin: auto;
   }
 
+  .m-1{
+    margin: 0.25rem;
+  }
+
   .mx-0{
     margin-left: 0px;
     margin-right: 0px;
@@ -1757,6 +1761,10 @@ video {
 
   .flex-wrap{
     flex-wrap: wrap;
+  }
+
+  .flex-wrap-reverse{
+    flex-wrap: wrap-reverse;
   }
 
   .flex-nowrap{

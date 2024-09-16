@@ -2,7 +2,7 @@ import {useEffect, useState} from "react";
 import {GetUserDatas, UserData} from "../api/user_data";
 import { Accordion, AccordionTab } from 'primereact/accordion';
 import {Button} from "primereact/button";
-import {Account} from "./Account";
+import {AdminAccount} from "./Account.tsx";
 import {UserActionView} from "../components/UserAction"
 
 const AdminUsers = ({back}: {back: () => void}) => {
@@ -17,12 +17,12 @@ const AdminUsers = ({back}: {back: () => void}) => {
 
 
   const createTabs = () => {
-    return userDatas.map((userData, i) => {
+    return userDatas.map((userData) => {
 
       const header = userData.name + (userData.new ? " - new" : "")
       return (
           <AccordionTab key={userData.user_id} header={header}>
-              <Account userId={userData.user_id} onSave={loadUsers}/>
+              <AdminAccount userId={userData.user_id} onSave={loadUsers}/>
               <UserActionView user_id={userData.user_id}/>
           </AccordionTab>
       );

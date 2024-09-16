@@ -20,7 +20,7 @@ import {
   EventUserName,
   EventUserOpen,
   EventUserRole,
-  EventUserStateView
+  EventUserStateView, FetlifeLink
 } from "../components/EventUserViews";
 import {Page} from "../entry_points";
 import AdminMenue from "../components/AdminMenue.tsx";
@@ -34,6 +34,7 @@ import {
   RopeEventDate
 } from "../api/event_public.ts";
 import Loading from "../components/Loading.tsx";
+import {GetRoleFromPercent} from "../api/data.tsx";
 
 
 export const Events = ({user_id, register_to_event, setRegisterToEvent, setPage, onLoggedOut}: {
@@ -127,7 +128,7 @@ export const Events = ({user_id, register_to_event, setRegisterToEvent, setPage,
 
   return <div className='flex flex-col gap-2 w-full'>
     {user_id && <div className="flex flex-wrap justify-end gap-2">
-      <AdminMenue setPage={setPage}/>
+      <AdminMenue user_id={user_id} setPage={setPage}/>
       <Logout OnLogout={onLoggedOut}/>
     </div>}
 
@@ -171,7 +172,7 @@ export const Events = ({user_id, register_to_event, setRegisterToEvent, setPage,
 
     {logged_in_event_data ? <>
       <Header event_date={event_date!}/>
-      <MemberList users={users} logged_in_event={logged_in_event_data} self_user_id={user_id!}/>
+      <UserList users={users} logged_in_event={logged_in_event_data} self_user_id={user_id!}/>
       <EventText logged_in_event={logged_in_event_data}/>
     </> : <>
       {public_event_data ? <>
@@ -184,18 +185,52 @@ export const Events = ({user_id, register_to_event, setRegisterToEvent, setPage,
 }
 
 
-const MemberList = ({users, logged_in_event, self_user_id}: {
+const UserList = ({users, logged_in_event, self_user_id}: {
   users: EventUser[],
   logged_in_event: LoggedInRopeEvent,
   self_user_id: number
 }) => {
+  const [selected_user, setSelctedUser] = useState<EventUser | undefined>(undefined);
 
   const Template = (user: EventUser) => {
-    return (<div className='flex justify-center items-center flex-wrap'>
+    if (selected_user == user) {
+      // aufgeklappt
+      return (<div className='flex flex-col text-lg mb-2'>
+        <div className='text-2xl flex items-center gap-2 flex-wrap-reverse justify-end'>
+          <EventUserStateView user={user}/>
+          <EventUserName user={user} bold={false}/>
+          <div className='grow'></div>
+          <Button icon="pi pi-times" className="m-2" onClick={() => {
+            setSelctedUser(undefined);
+          }}/></div>
+
+        {user.fetlife_name && user.fetlife_name != "" && <div className="flex">
+          <FetlifeLink fetlife_name={user.fetlife_name}/>
+        </div>}
+
+        {user.role_factor && <div className='flex items-center gap-2'>
+          <label>{GetRoleFromPercent(user.role_factor).name}</label>
+          <div className="grow"><EventUserRole user={user}/></div>
+        </div>}
+
+        {user.guests && user.guests != 0 && <div className='flex items-center gap-2'>
+          <EventUserGuests user={user}/>
+          <label>Bringt {user.guests} Personen mit.</label>
+        </div>}
+
+        {user.open && <div className='flex items-center gap-2'>
+          <EventUserOpen user={user}/>
+          <label>Hat Interesse mit neuen Personen zu fesseln.</label>
+        </div>}
+      </div>)
+    }
+
+
+    return (<div className='flex justify-center items-center flex-wrap' onClick={() => setSelctedUser(user)}>
       <EventUserStateView user={user}/>
       <EventUserName user={user} bold={user.user_id == self_user_id}/>
       <div className='grow'></div>
-      <div className='flex items-center flex-wrap'>
+      <div className='flex items-center'>
         <EventUserGuests user={user}/>
         <EventUserOpen user={user}/>
         <div className="w-24"><EventUserRole user={user}/></div>

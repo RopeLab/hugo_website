@@ -2,7 +2,6 @@ import {UserData} from "../api/user_data";
 import {ProgressBar} from "primereact/progressbar";
 import {GetRoleFromPercent} from "../api/data";
 import {Slider} from "primereact/slider";
-import React from "react";
 import {InputText} from "primereact/inputtext";
 import {InputTextarea} from "primereact/inputtextarea";
 import {Checkbox} from "primereact/checkbox";
@@ -118,7 +117,6 @@ export const RoleOverview = ({userData}: {userData: UserData}) => {
 }
 
 
-
 export const UserOpenSetting = ({userData, setUserData}: {userData: UserData, setUserData: (userData: UserData) => void}) => {
   return <>
     <div className='mt-6 mb-2 text-xl'>
@@ -150,9 +148,15 @@ export const UserShowSetting = ({userData, setUserData}: {userData: UserData, se
         <label className="sm:w-64 m-2">Namen / Nick:</label>
         <Checkbox
           onChange={e => setUserData({...userData, show_name: e.checked!})}
-          checked={userData.show_name}
-          className=''/>
+          checked={userData.show_name}/>
       </div>
+
+      {userData.fetlife_name != "" && <div className="flex items-center justify-between sm:justify-start mr-6">
+        <label className="sm:w-64 m-2">Link zu meinem Fetlife:</label>
+        <Checkbox
+          onChange={e => setUserData({...userData, show_fetlife: e.checked!})}
+          checked={userData.show_fetlife}/>
+      </div>}
 
       <div className="flex items-center justify-between sm:justify-start mr-6">
         <label className="sm:w-64 m-2">Rolle:</label>
@@ -161,16 +165,25 @@ export const UserShowSetting = ({userData, setUserData}: {userData: UserData, se
           checked={userData.show_role}/>
       </div>
 
-      <div className="flex items-center justify-between sm:justify-start mr-6">
-        {userData.open ?
-        <>
+      {userData.open && <div className="flex items-center justify-between sm:justify-start mr-6">
           <label className="sm:w-64 m-2">Mit neuen Personen zu fesseln:</label>
           <Checkbox
             onChange={e => setUserData({...userData, show_open: e.checked!})}
-            checked={userData.show_open}
-            className=''/>
-        </> : <></>}
-      </div>
+            checked={userData.show_open}/>
+        </div>}
+    </div>
+  </>
+}
+
+export const UserNewSetting = ({userData, setUserData}: {userData: UserData, setUserData: (userData: UserData) => void}) => {
+  return <>
+    <div className="flex items-center justify-between sm:justify-start mr-6">
+      <label className="sm:w-64 m-2">Neu:</label>
+      <Checkbox
+        onChange={e => {
+          setUserData({...userData, new: e.checked!})
+        }}
+        checked={userData.new}/>
     </div>
   </>
 }

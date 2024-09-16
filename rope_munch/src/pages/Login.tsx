@@ -6,7 +6,7 @@ import {Dialog} from "primereact/dialog";
 import {PostLogin} from "../api/auth";
 
 
-const Login = ({OnLoggedIn, back}: {OnLoggedIn: (userId: number) => void, back: () => void | undefined}) => {
+const Login = ({OnLoggedIn, back}: {OnLoggedIn: (userId: number) => void, back: (() => void) | undefined}) => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [showRest, setShowRest] = useState<boolean>(false);

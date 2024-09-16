@@ -6,7 +6,7 @@ import '../output.css'
 
 import 'primeicons/primeicons.css'
 
-import {AccountPage} from "../pages/Account.tsx";
+import {Account} from "../pages/Account.tsx";
 import {GetUserId} from "../api/auth.ts";
 import Login from "../pages/Login.tsx";
 
@@ -19,12 +19,12 @@ const App = ({}) => {
   return <>
     {user_id ?
       <> {user_id != "not_logged_in" ?
-        <AccountPage
+        <Account
           userId={user_id}
           onSave={() => {}}
           onLogout={() => setUserId("not_logged_in")}
         /> :
-        <Login OnLoggedIn={setUserId}/>
+        <Login OnLoggedIn={setUserId} back={undefined}/>
       } </>:
       <label>Loading</label>
     }

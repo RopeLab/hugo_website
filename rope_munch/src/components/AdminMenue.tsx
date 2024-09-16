@@ -1,13 +1,17 @@
 import { MenuItem } from "primereact/menuitem";
 import { Menu } from 'primereact/menu';
 import {Button} from "primereact/button";
-import  {useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {Page} from "../entry_points";
+import {GetAdmin} from "../api/auth.ts";
 
 
-const AdminMenue = ({setPage}: {setPage: (page: Page) => void}) => {
+const AdminMenue = ({user_id, setPage}: {user_id: number, setPage: (page: Page) => void}) => {
 
-  const [admin, setAdmin] = useState<boolean>(true)
+  const [admin, setAdmin] = useState<boolean>(false);
+  useEffect(() => {
+    GetAdmin(user_id, setAdmin);
+  })
 
   const menu = useRef(null);
   let items: MenuItem[] = [
@@ -24,15 +28,13 @@ const AdminMenue = ({setPage}: {setPage: (page: Page) => void}) => {
   ];
 
   return <>
-    {admin ?
-      <>
+    {admin && <>
         <Menu model={items} popup ref={menu} />
         <Button label={"Admin"} onClick={(e) => {
           // @ts-ignore
           menu.current.toggle(e)
         }} />
-      </> :
-      <></>}
+      </>}
   </>
 }
 

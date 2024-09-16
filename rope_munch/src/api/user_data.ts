@@ -12,9 +12,9 @@ export class UserData {
   "show_name": boolean
   "show_role": boolean
   "show_open": boolean
+  "show_fetlife": boolean
   "new": boolean
 }
-
 
 export const PostUserData = (
   user_data: UserData

@@ -82,3 +82,10 @@ export const GetEmail = (
 ) => {
   GetAPIAndParse("/user/" + userId + "/email", setEmail);
 }
+
+export const GetAdmin = (
+  userId: number,
+  setAdmin: (email: boolean) => void,
+) => {
+  GetAPIAndParse("/user/" + userId + "/admin", setAdmin);
+}

@@ -13,9 +13,10 @@ export class EventUser {
   "slot": number;
   "state": EventUserState;
   "guests": number;
-  "name": string;
-  "role_factor": number;
-  "open": boolean;
+  "name": string | undefined;
+  "fetlife_name": string | undefined;
+  "role_factor": number | undefined;
+  "open": boolean | undefined;
 }
 
 export const GetEventUser = (
