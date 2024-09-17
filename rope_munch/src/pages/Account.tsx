@@ -14,6 +14,8 @@ import {UserEmail} from "../components/UserAuthData";
 import {Logout} from "../components/Logout.tsx";
 import Loading from "../components/Loading.tsx";
 import {FetlifeLink} from "../components/EventUserViews.tsx";
+import {confirmPopup, ConfirmPopup} from "primereact/confirmpopup";
+import {PostRemoveUser} from "../api/auth.ts";
 
 
 export const Account = ({userId, onSave, onLogout}: { userId: number, onSave: () => void , onLogout: () => void}) => {
@@ -129,7 +131,7 @@ export const AdminAccount = ({userId, onSave}: { userId: number, onSave: () => v
         <UserEmail user_id={userId}/>
       </div>
 
-      <UserNewSetting userData={userData} setUserData={setUserData} />
+      <UserNewSetting userData={userData} setUserData={setUserData}/>
 
       <div className='mt-4 mb-2 text-lg'>
         Name / Nick
@@ -155,9 +157,26 @@ export const AdminAccount = ({userId, onSave}: { userId: number, onSave: () => v
       <UserShowSetting userData={userData} setUserData={setUserData}/>
       <UserQuestionSetting userData={userData} setUserData={setUserData}/>
 
-      <Button
-        label="Speichern"
-        className="self-end"
-        onClick={on_save}/>
+      <div className="flex">
+        <ConfirmPopup/>
+        <Button severity="danger" onClick={(e) => {
+          confirmPopup({
+            target: e.currentTarget,
+            message: 'Willst du wirklich alle Daten zu diesem Nutzer löschen?',
+            icon: 'pi pi-info-circle',
+            acceptClassName: 'p-button-danger',
+            accept: () => {
+              PostRemoveUser(userId, onSave)
+            },
+          });
+        }}>Löschen</Button>
+
+        <div className="grow"/>
+        <Button
+          label="Speichern"
+          className="self-end"
+          onClick={on_save}/>
+      </div>
+
     </div>)
 }

@@ -44,7 +44,7 @@ const AdminEvents = ({back}: {back: () => void}) => {
         <AccordionTab key={header} header={header}>
           <div className='flex flex-row-reverse mt-2 flex-wrap'>
             <ConfirmPopup/>
-            <Button className="p-button-danger" onClick={(e) => {
+            <Button severity="danger" onClick={(e) => {
               confirmPopup({
                 target: e.currentTarget,
                 message: 'Willst du dieses Event wirklich löschen?',

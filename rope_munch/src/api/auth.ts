@@ -11,24 +11,30 @@ class Credentials {
   "password": string
 }
 
-export const PostLogin = (email: string, password: string, OnLoggedIn: (id: number) => void) => {
+export const PostLogin = (email: string, password: string, OnLoggedIn: (id: number) => void, OnErr: (text: string) => void) => {
   PostAPI<Credentials>("/login", {
     "email": email,
     "password": password,
   }, (r) => {
-    ResponseToClass(r, (id: number) => {
-      console.log("Logged in: " + id);
+    if (!r.ok) {
+      ResponseToClass(r, (message: ErrorMessage) => {
+        OnErr(message.message)
+      }, () => {
+        console.log("Failed to parse error!!! This should never happen");
+      });
+      return;
+    }
 
+    ResponseToClass(r, (id: number) => {
       OnLoggedIn(id);
     }, () => {
-      console.log("Login error");
+      console.log("Failed to parse user id!!! This should never happen");
     });
   });
 }
 
 export const PostLogout = (OnLoggedOut: () => void) => {
   PostAPIWithoutContent("/logout",(_) => {
-    console.log("Logged out");
     OnLoggedOut();
   });
 }
@@ -55,8 +61,9 @@ export const PostSignUp = (
         console.log("No error message!!! This should never happen");
       });
     } else {
-      console.log("Signed up");
-      PostLogin(email, password, OnSignedUp);
+      PostLogin(email, password, OnSignedUp, () => {
+        console.log("Could not login after signup!!! This should never happen");
+      });
     }
   });
 }
@@ -88,4 +95,21 @@ export const GetAdmin = (
   setAdmin: (email: boolean) => void,
 ) => {
   GetAPIAndParse("/user/" + userId + "/admin", setAdmin);
+}
+
+export const PostRemoveUser = (
+  user_id: number,
+  onDone: () => void,
+) => {
+  PostAPIWithoutContent("/user/" + user_id + "/remove", (response) => {
+    if (!response.ok) {
+      ResponseToClass(response, (message: ErrorMessage) => {
+        console.log("Remove user error: " + message.message);
+      }, () => {
+        console.log("No error message!!! This should never happen");
+      });
+    }
+
+    onDone();
+  });
 }

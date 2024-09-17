@@ -16,7 +16,7 @@ const Login = ({OnLoggedIn, back}: {OnLoggedIn: (userId: number) => void, back: 
   const onLogin = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
 
-    PostLogin(email, password, OnLoggedIn);
+    PostLogin(email, password, OnLoggedIn, errorPopup);
   }
 
   const errorPopup = (text: string) => {
