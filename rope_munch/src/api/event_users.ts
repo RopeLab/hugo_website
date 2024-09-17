@@ -11,12 +11,19 @@ export enum EventUserState {
 export class EventUser {
   "user_id": number;
   "slot": number;
+  "new_slot": number;
   "state": EventUserState;
   "guests": number;
   "name": string | undefined;
   "fetlife_name": string | undefined;
   "role_factor": number | undefined;
   "open": boolean | undefined;
+}
+
+export class EventUserLists {
+  "registered": EventUser[];
+  "new": EventUser[];
+  "waiting": EventUser[];
 }
 
 export const GetEventUser = (
@@ -37,11 +44,11 @@ export const GetEventUser = (
 
 export const GetEventUsers = (
   event_id: number,
-  setEventUsers: (users: EventUser[]) => void,
+  setEventUsers: (users: EventUserLists | undefined) => void,
 ) => {
   GetAPI("/event/" + event_id + "/users", (response: Response) => {
     if (!response.ok) {
-      setEventUsers([])
+      setEventUsers(undefined)
     } else {
       ResponseToClass(response, setEventUsers, () => {
         console.log("Classes did not match!!! This should never happen");

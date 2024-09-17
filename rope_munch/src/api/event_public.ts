@@ -19,9 +19,12 @@ export class PublicRopeEvent {
 
 export class LoggedInRopeEvent {
   "slots": number;
+  "new_slots": number;
   "register_count": number;
+  "new_count": number;
   "wait_count": number;
   "open_count": number;
+  "open_new_count": number;
   "description": string
 }
 

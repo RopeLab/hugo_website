@@ -9,7 +9,7 @@ import Markdown from 'react-markdown'
 import {GetGermanDate, GetGermanDateTime, GetGermanTime} from "../api/events";
 import {
   ChangeGuestsOfEvent,
-  EventUser,
+  EventUser, EventUserLists,
   EventUserState, GetEventUser,
   GetEventUsers,
   RegisterToEvent,
@@ -84,13 +84,13 @@ export const Events = ({user_id, register_to_event, setRegisterToEvent, setPage,
   const [public_event_data, setPublicEventData] = useState<PublicRopeEvent | undefined>(undefined)
   const [logged_in_event_data, setLoggedInEventData] = useState<LoggedInRopeEvent | undefined>(undefined)
   const [event_user, setEventUser] = useState<EventUser | undefined | "not_registered">(undefined)
-  const [users, setUsers] = useState<EventUser[]>([])
+  const [users, setUsers] = useState<EventUserLists | undefined>(undefined)
 
-  useEffect(() => {
+  const reloadUsers = () => {
     if (!event_date) {
       setPublicEventData(undefined);
       setLoggedInEventData(undefined);
-      setUsers([]);
+      setUsers(undefined);
       return
     }
 
@@ -103,9 +103,10 @@ export const Events = ({user_id, register_to_event, setRegisterToEvent, setPage,
     } else {
       setLoggedInEventData(undefined);
       setEventUser(undefined);
-      setUsers([])
+      setUsers(undefined);
     }
-  }, [event_date, user_id])
+  }
+  useEffect(reloadUsers, [event_date, user_id])
 
   useEffect(() => {
     if (!event_user || event_user == "not_registered") {
@@ -115,16 +116,7 @@ export const Events = ({user_id, register_to_event, setRegisterToEvent, setPage,
     setRegisterToEvent(undefined)
   }, [event_user])
 
-  const reloadUsers = () => {
-    if (!event_date || !user_id) {
-      setEventUser(undefined);
-      setUsers([]);
-      return
-    }
 
-    GetEventUser(event_date.id, user_id, setEventUser);
-    GetEventUsers(event_date.id, setUsers);
-  }
 
   return <div className='flex flex-col gap-2 w-full'>
     {user_id && <div className="flex flex-wrap justify-end gap-2">
@@ -172,7 +164,10 @@ export const Events = ({user_id, register_to_event, setRegisterToEvent, setPage,
 
     {logged_in_event_data ? <>
       <Header event_date={event_date!}/>
-      <UserList users={users} logged_in_event={logged_in_event_data} self_user_id={user_id!}/>
+      {users ?
+        <UserList users={users} logged_in_event={logged_in_event_data} self_user_id={user_id!}/> :
+        <Loading/>
+      }
       <EventText logged_in_event={logged_in_event_data}/>
     </> : <>
       {public_event_data ? <>
@@ -186,7 +181,7 @@ export const Events = ({user_id, register_to_event, setRegisterToEvent, setPage,
 
 
 const UserList = ({users, logged_in_event, self_user_id}: {
-  users: EventUser[],
+  users: EventUserLists,
   logged_in_event: LoggedInRopeEvent,
   self_user_id: number
 }) => {
@@ -208,9 +203,14 @@ const UserList = ({users, logged_in_event, self_user_id}: {
           <FetlifeLink fetlife_name={user.fetlife_name}/>
         </div>}
 
-        {user.role_factor && <div className='flex items-center gap-2'>
+        {(user.state == EventUserState.Waiting || user.state == EventUserState.WaitingNew) && <>
+          {user.state == EventUserState.WaitingNew && <label>Neulings-Wartelistenplatz Nr. {user.new_slot + 1}</label>}
+          <label className="mb-4">Wartelistenplatz Nr. {user.slot + 1}</label>
+        </>}
+
+        {user.role_factor && <div className='flex items-center gap-2 mb-2'>
+          <div className="w-24"><EventUserRole user={user}/></div>
           <label>{GetRoleFromPercent(user.role_factor).name}</label>
-          <div className="grow"><EventUserRole user={user}/></div>
         </div>}
 
         {user.guests && user.guests != 0 && <div className='flex items-center gap-2'>
@@ -238,19 +238,41 @@ const UserList = ({users, logged_in_event, self_user_id}: {
     </div>)
   }
 
-  const eventInfo = <label>
-    {logged_in_event.register_count} / {logged_in_event.slots} angemeldet --- {logged_in_event.wait_count === 1 && logged_in_event.wait_count + " wartet --- "}
-    {logged_in_event.wait_count > 1 && logged_in_event.wait_count + " warten --- "}
+  const registerInfo = <label>
+    {logged_in_event.register_count} / {logged_in_event.slots} angemeldet ---
     Offen mit neuen Personen zu fesseln: {logged_in_event.open_count} / {logged_in_event.register_count}
+  </label>
+
+  const newInfo = <label>
+    {logged_in_event.new_count} / {logged_in_event.new_slots} Neulingsplätze vergeben
+  </label>
+
+  const waitInfo = <label>
+    {logged_in_event.wait_count === 1 && logged_in_event.wait_count + " Person wartet"}
+    {logged_in_event.wait_count > 1 && logged_in_event.wait_count + " Personen warten"}
   </label>
 
   return (<div className='border-round bg-white'>
     <DataScroller
-      value={users}
+      value={users.registered}
       itemTemplate={Template}
       rows={20}
       buffer={0.4}
-      header={eventInfo}/>
+      header={registerInfo}/>
+
+    {logged_in_event.new_slots > 0 && <DataScroller
+      value={users.new}
+      itemTemplate={Template}
+      rows={20}
+      buffer={0.4}
+      header={newInfo}/>}
+
+    {logged_in_event.wait_count > 0 && <DataScroller
+      value={users.waiting}
+      itemTemplate={Template}
+      rows={20}
+      buffer={0.4}
+      header={waitInfo}/>}
   </div>)
 }
 
