@@ -67,6 +67,16 @@ export const EventUserRole = ({user}: {user: EventUser}) => {
   </>);
 };
 
+export const EventUserAttended = ({attended}: {attended: boolean}) => {
+  return (<>
+    {attended ?
+      <Tag severity="success" className='h-8 w-20 mx-1 my-2'>War da</Tag> :
+      <div className='mx-1 my-2 h-8 w-20'/>
+    }
+  </>);
+};
+
+
 
 
 

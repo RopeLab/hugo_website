@@ -18,6 +18,7 @@ export class EventUser {
   "fetlife_name": string | undefined;
   "role_factor": number | undefined;
   "open": boolean | undefined;
+  "attended": boolean | undefined;
 }
 
 export const GetEventUser = (
@@ -114,7 +115,7 @@ export const UnRegisterFromEvent = (
   PostAPIWithoutContent("/event/" + event_id + "/unregister/" + user_id, (response) => {
     if (!response.ok) {
       ResponseToClass(response, (message: ErrorMessage) => {
-        console.log("Register event error: " + message.message);
+        console.log("Unregister event error: " + message.message);
       }, () => {
         console.log("No error message!!! This should never happen");
       });
@@ -133,7 +134,26 @@ export const ChangeGuestsOfEvent = (
   PostAPI<number>("/event/" + event_id + "/change_guests/" + user_id, guests, (response) => {
     if (!response.ok) {
       ResponseToClass(response, (message: ErrorMessage) => {
-        console.log("Register event error: " + message.message);
+        console.log("Change Guests error: " + message.message);
+      }, () => {
+        console.log("No error message!!! This should never happen");
+      });
+    }
+
+    onDone();
+  });
+}
+
+export const SetAttendedForEvent = (
+  event_id: number,
+  user_id: number,
+  attended: boolean,
+  onDone: () => void,
+) => {
+  PostAPI<boolean>("/event/" + event_id + "/attended/" + user_id, attended, (response) => {
+    if (!response.ok) {
+      ResponseToClass(response, (message: ErrorMessage) => {
+        console.log("Set Attended error: " + message.message);
       }, () => {
         console.log("No error message!!! This should never happen");
       });

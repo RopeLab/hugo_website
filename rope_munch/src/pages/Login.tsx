@@ -59,7 +59,7 @@ const Login = ({OnLoggedIn, back}: {OnLoggedIn: (userId: number) => void, back: 
 
       <div className='flex justify-end gap-2 flex-wrap'>
         <Button text onClick={() => setShowRest(true)}>Passwort vergessen</Button>
-        <Button onClick={onLogin}>Anmelden</Button>
+        <Button label={"Anmelden"} onClick={onLogin} className='w-max text-xl'/>
       </div>
 
       <Dialog header="Passwort zurück setzen" visible={showRest} onHide={() => setShowRest(false)}>
@@ -73,7 +73,7 @@ const Login = ({OnLoggedIn, back}: {OnLoggedIn: (userId: number) => void, back: 
             onChange={(e) => setEmail(e.target.value)}
             className="m-2"
           />
-          <Button onClick={onRest} className="self-end m-2">Anfrage senden</Button>
+          <Button label={"Anfrage senden"} onClick={onRest} className="self-end m-2"/>
         </div>
       </Dialog>
     </div>

@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {Dropdown} from 'primereact/dropdown';
 import {Toast} from 'primereact/toast';
 import {DataScroller} from 'primereact/datascroller';
@@ -14,10 +14,11 @@ import {
   EventUserState,
   GetEventUser,
   GetEventUsers, GetEventUsersAdmin, GetEventUsersCheckAttention,
-  RegisterToEvent,
+  RegisterToEvent, SetAttendedForEvent,
   UnRegisterFromEvent
 } from "../api/event_users";
 import {
+  EventUserAttended,
   EventUserGuests,
   EventUserName,
   EventUserOpen,
@@ -202,6 +203,9 @@ export const Events = ({user_id, register_to_event, setRegisterToEvent, setPage,
       {event_date && <>
         {event_user || !user_id ? <>
           {event_user == "not_registered" || !user_id ? <>
+            {!user_id && <Button label="Einloggen" className='w-max text-xl' onClick={() => {
+              setPage(Page.Login)
+            }}/>}
             <Register
             event_id={event_date.id!}
             user_id={user_id}
@@ -235,7 +239,7 @@ export const Events = ({user_id, register_to_event, setRegisterToEvent, setPage,
 
       {check_attended_mode ? <>
           {attended_users ?
-            <UserListCheckAttention users={attended_users} logged_in_event={private_event_data} self_user_id={user_id!}/> :
+            <UserListCheckAttended users={attended_users} logged_in_event={private_event_data} event_id={event_date!.id}/> :
             <Loading/>
           }
         </>:
@@ -409,13 +413,31 @@ const UserList = ({users, logged_in_event, self_user_id}: {
   </div>)
 }
 
-const UserListCheckAttention = ({users, logged_in_event, self_user_id}: {
-  users: EventUser[],
-  logged_in_event: PrivateRopeEvent,
-  self_user_id: number
-}) => {
-  const [selected_user, setSelctedUser] = useState<EventUser | undefined>(undefined);
 
+const UserListTemplateCheckAttended = (
+  {event_id, user}: { event_id: number, user: EventUser}
+) => {
+  const [attended, setAttended] = useState<boolean>(user.attended!)
+
+  return (<div className='flex justify-center items-center flex-wrap' onClick={() => {
+    SetAttendedForEvent(event_id, user.user_id, !attended, () => {});
+    setAttended(!attended);
+  }}>
+    <EventUserStateView user={user}/>
+    <EventUserName user={user} bold={false}/>
+    <div className='grow'></div>
+    <div className='flex items-center'>
+      <EventUserGuests user={user}/>
+      <EventUserAttended attended={attended}/>
+    </div>
+  </div>)
+}
+
+const UserListCheckAttended = ({event_id, users, logged_in_event}: {
+  event_id: number
+  users: EventUser[],
+  logged_in_event: PrivateRopeEvent
+}) => {
   const info = <label>
     {logged_in_event.register_count} / {logged_in_event.slots} {"angemeldet --- "}
     {logged_in_event.new_count} / {logged_in_event.new_slots} neu
@@ -426,11 +448,7 @@ const UserListCheckAttention = ({users, logged_in_event, self_user_id}: {
   return (<div className='border-round bg-white'>
     <DataScroller
       value={users}
-      itemTemplate={(u: EventUser) => <UserListTemplate
-        user={u}
-        self_user_id={self_user_id}
-        selected_user={selected_user}
-        setSelctedUser={setSelctedUser}/>}
+      itemTemplate={(u: EventUser) => <UserListTemplateCheckAttended user={u} event_id={event_id}/>}
       rows={20}
       buffer={0.4}
       header={info}/>
