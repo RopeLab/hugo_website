@@ -20,12 +20,6 @@ export class EventUser {
   "open": boolean | undefined;
 }
 
-export class EventUserLists {
-  "registered": EventUser[];
-  "new": EventUser[];
-  "waiting": EventUser[];
-}
-
 export const GetEventUser = (
   event_id: number,
   user_id: number,
@@ -42,6 +36,12 @@ export const GetEventUser = (
   });
 }
 
+export class EventUserLists {
+  "registered": EventUser[];
+  "new": EventUser[];
+  "waiting": EventUser[];
+}
+
 export const GetEventUsers = (
   event_id: number,
   setEventUsers: (users: EventUserLists | undefined) => void,
@@ -49,6 +49,36 @@ export const GetEventUsers = (
   GetAPI("/event/" + event_id + "/users", (response: Response) => {
     if (!response.ok) {
       setEventUsers(undefined)
+    } else {
+      ResponseToClass(response, setEventUsers, () => {
+        console.log("Classes did not match!!! This should never happen");
+      });
+    }
+  });
+}
+
+export const GetEventUsersAdmin = (
+  event_id: number,
+  setEventUsers: (users: EventUserLists | undefined) => void,
+) => {
+  GetAPI("/event/" + event_id + "/users/admin", (response: Response) => {
+    if (!response.ok) {
+      setEventUsers(undefined)
+    } else {
+      ResponseToClass(response, setEventUsers, () => {
+        console.log("Classes did not match!!! This should never happen");
+      });
+    }
+  });
+}
+
+export const GetEventUsersCheckAttention = (
+  event_id: number,
+  setEventUsers: (users: EventUser[]) => void,
+) => {
+  GetAPI("/event/" + event_id + "/users/check_attended", (response: Response) => {
+    if (!response.ok) {
+      setEventUsers([])
     } else {
       ResponseToClass(response, setEventUsers, () => {
         console.log("Classes did not match!!! This should never happen");

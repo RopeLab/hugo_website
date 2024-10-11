@@ -13,7 +13,7 @@ import {
   EventUserLists,
   EventUserState,
   GetEventUser,
-  GetEventUsers,
+  GetEventUsers, GetEventUsersAdmin, GetEventUsersCheckAttention,
   RegisterToEvent,
   UnRegisterFromEvent
 } from "../api/event_users";
@@ -39,6 +39,7 @@ import {
 import Loading from "../components/Loading";
 import {GetRoleFromPercent} from "../api/data";
 import {HasPermission, UserPermission} from "../api/permissions.ts";
+import {Checkbox} from "primereact/checkbox";
 
 
 export const Events = ({user_id, register_to_event, setRegisterToEvent, setPage, onLoggedOut}: {
@@ -87,6 +88,8 @@ export const Events = ({user_id, register_to_event, setRegisterToEvent, setPage,
 
   const [event_user, setEventUser] = useState<EventUser | undefined | "not_registered">(undefined)
   const [verified, setVerified] = useState<boolean | undefined>(undefined);
+  const [admin, setAdmin] = useState<boolean | undefined>(undefined);
+  const [check_attended, setCheckAttention] = useState<boolean | undefined>(undefined);
 
   useEffect(() => {
     if (!user_id) {
@@ -94,18 +97,33 @@ export const Events = ({user_id, register_to_event, setRegisterToEvent, setPage,
     }
 
     HasPermission(user_id, UserPermission.Verified, setVerified);
+    HasPermission(user_id, UserPermission.Admin, setAdmin);
+    HasPermission(user_id, UserPermission.CheckAttended, setCheckAttention);
   }, [user_id])
-
 
   const [public_event_data, setPublicEventData] = useState<PublicRopeEvent | undefined>(undefined)
   const [private_event_data, setPrivateEventData] = useState<PrivateRopeEvent | undefined>(undefined)
-  const [users, setUsers] = useState<EventUserLists | undefined>(undefined)
+
+  const [admin_mode, setAdminMode] = useState<boolean>(false);
+  const [check_attended_mode, setCheckAttendedMode] = useState<boolean>(false);
+
+  const [users, setUsers] = useState<EventUserLists | undefined>(undefined);
+  const [attended_users, setAttentionUsers] = useState<EventUser[]>([]);
+
+  useEffect(() => {
+    if (!admin) {
+      return
+    }
+
+    setAdminMode(true);
+  }, [admin])
 
   const reloadEventData = () => {
     if (!event_date) {
       setPublicEventData(undefined);
       setPrivateEventData(undefined);
       setUsers(undefined);
+      setAttentionUsers([]);
       setEventUser(undefined);
       return
     }
@@ -114,11 +132,12 @@ export const Events = ({user_id, register_to_event, setRegisterToEvent, setPage,
       GetPublicEvent(event_date.id, setPublicEventData);
       setPrivateEventData(undefined);
       setUsers(undefined);
+      setAttentionUsers([]);
       setEventUser(undefined);
       return;
     }
 
-    if (verified == undefined) {
+    if (verified == undefined || admin == undefined || check_attended == undefined) {
       return;
     }
 
@@ -126,6 +145,7 @@ export const Events = ({user_id, register_to_event, setRegisterToEvent, setPage,
       GetPublicEvent(event_date.id, setPublicEventData);
       setPrivateEventData(undefined);
       setUsers(undefined);
+      setAttentionUsers([]);
       GetEventUser(event_date.id, user_id, setEventUser);
 
       return;
@@ -133,10 +153,21 @@ export const Events = ({user_id, register_to_event, setRegisterToEvent, setPage,
 
     setPublicEventData(undefined);
     GetPrivateEvent(event_date.id, setPrivateEventData);
-    GetEventUsers(event_date.id, setUsers);
+
+    if (admin_mode) {
+      GetEventUsersAdmin(event_date.id, setUsers);
+      setAttentionUsers([]);
+    } else if (check_attended_mode) {
+      setUsers(undefined);
+      GetEventUsersCheckAttention(event_date.id, setAttentionUsers);
+    } else {
+      GetEventUsers(event_date.id, setUsers);
+      setAttentionUsers([]);
+    }
+
     GetEventUser(event_date.id, user_id, setEventUser);
   }
-  useEffect(reloadEventData, [event_date, user_id, verified])
+  useEffect(reloadEventData, [event_date, user_id, verified, admin_mode, check_attended_mode])
 
   useEffect(() => {
     if (!event_user || event_user == "not_registered") {
@@ -194,10 +225,26 @@ export const Events = ({user_id, register_to_event, setRegisterToEvent, setPage,
 
     {private_event_data ? <>
       <Header event_date={event_date!}/>
-      {users ?
-        <UserList users={users} logged_in_event={private_event_data} self_user_id={user_id!}/> :
-        <Loading/>
-      }
+      <Mode
+        admin={admin}
+        admin_mode={admin_mode}
+        setAdminMode={setAdminMode}
+        check_attended={check_attended}
+        check_attended_mode={check_attended_mode}
+        setCheckAttendedMode={setCheckAttendedMode} />
+
+      {check_attended_mode ? <>
+          {attended_users ?
+            <UserListCheckAttention users={attended_users} logged_in_event={private_event_data} self_user_id={user_id!}/> :
+            <Loading/>
+          }
+        </>:
+        <>
+          {users ?
+            <UserList users={users} logged_in_event={private_event_data} self_user_id={user_id!}/> :
+            <Loading/>
+          }
+        </>}
       <EventText logged_in_event={private_event_data}/>
     </> : <>
       {public_event_data ? <>
@@ -209,6 +256,101 @@ export const Events = ({user_id, register_to_event, setRegisterToEvent, setPage,
 </div>
 }
 
+const Mode = (
+  {admin, admin_mode, setAdminMode, check_attended, check_attended_mode, setCheckAttendedMode}:
+    {
+      admin: boolean | undefined,
+      admin_mode: boolean,
+      setAdminMode: (b: boolean) => void,
+      check_attended: boolean | undefined,
+      check_attended_mode: boolean,
+      setCheckAttendedMode: (b: boolean) => void
+    }
+    ) => {
+  return <div className="flex items-center">
+    {admin && <>
+      <label className="m-2">Admin:</label>
+
+      <Checkbox
+        onChange={e => {
+          setAdminMode(e.checked!);
+          setCheckAttendedMode(false);
+        }}
+        checked={admin_mode}/>
+    </>}
+
+    {check_attended && <>
+      <label className="m-2">Anwesenheit:</label>
+
+      <Checkbox
+        onChange={e => {
+          setAdminMode(false);
+          setCheckAttendedMode(e.checked!);
+        }}
+        checked={check_attended_mode}/>
+    </>}
+
+  </div>
+}
+
+const UserListTemplate = (
+  {user, self_user_id, selected_user, setSelctedUser}:
+    {
+      user: EventUser,
+      self_user_id: number,
+      selected_user: EventUser | undefined,
+      setSelctedUser: (user: EventUser | undefined) => void
+    }
+) => {
+  if (selected_user == user) {
+    // aufgeklappt
+    return (<div className='flex flex-col text-lg mb-2'>
+      <div className='text-2xl flex items-center gap-2 flex-wrap-reverse justify-end'>
+        <EventUserStateView user={user}/>
+        <EventUserName user={user} bold={false}/>
+        <div className='grow'></div>
+        <Button icon="pi pi-times" className="m-2" onClick={() => {
+          setSelctedUser(undefined);
+        }}/></div>
+
+      {user.fetlife_name && user.fetlife_name != "" && <div className="flex">
+        <FetlifeLink fetlife_name={user.fetlife_name}/>
+      </div>}
+
+      {(user.state == EventUserState.Waiting || user.state == EventUserState.WaitingNew) && <>
+        {user.state == EventUserState.WaitingNew && <label>Neulings-Wartelistenplatz Nr. {user.new_slot + 1}</label>}
+        <label className="mb-4">Wartelistenplatz Nr. {user.slot + 1}</label>
+      </>}
+
+      {user.role_factor && <div className='flex items-center gap-2 mb-2'>
+        <div className="w-24"><EventUserRole user={user}/></div>
+        <label>{GetRoleFromPercent(user.role_factor).name}</label>
+      </div>}
+
+      {user.guests && user.guests != 0 && <div className='flex items-center gap-2'>
+        <EventUserGuests user={user}/>
+        <label>Bringt {user.guests} Personen mit.</label>
+      </div>}
+
+      {user.open && <div className='flex items-center gap-2'>
+        <EventUserOpen user={user}/>
+        <label>Hat Interesse mit neuen Personen zu fesseln.</label>
+      </div>}
+    </div>)
+  }
+
+
+  return (<div className='flex justify-center items-center flex-wrap' onClick={() => setSelctedUser(user)}>
+    <EventUserStateView user={user}/>
+    <EventUserName user={user} bold={user.user_id == self_user_id}/>
+    <div className='grow'></div>
+    <div className='flex items-center'>
+      <EventUserGuests user={user}/>
+      <EventUserOpen user={user}/>
+      <div className="w-24"><EventUserRole user={user}/></div>
+    </div>
+  </div>)
+}
 
 const UserList = ({users, logged_in_event, self_user_id}: {
   users: EventUserLists,
@@ -216,57 +358,6 @@ const UserList = ({users, logged_in_event, self_user_id}: {
   self_user_id: number
 }) => {
   const [selected_user, setSelctedUser] = useState<EventUser | undefined>(undefined);
-
-  const Template = (user: EventUser) => {
-    if (selected_user == user) {
-      // aufgeklappt
-      return (<div className='flex flex-col text-lg mb-2'>
-        <div className='text-2xl flex items-center gap-2 flex-wrap-reverse justify-end'>
-          <EventUserStateView user={user}/>
-          <EventUserName user={user} bold={false}/>
-          <div className='grow'></div>
-          <Button icon="pi pi-times" className="m-2" onClick={() => {
-            setSelctedUser(undefined);
-          }}/></div>
-
-        {user.fetlife_name && user.fetlife_name != "" && <div className="flex">
-          <FetlifeLink fetlife_name={user.fetlife_name}/>
-        </div>}
-
-        {(user.state == EventUserState.Waiting || user.state == EventUserState.WaitingNew) && <>
-          {user.state == EventUserState.WaitingNew && <label>Neulings-Wartelistenplatz Nr. {user.new_slot + 1}</label>}
-          <label className="mb-4">Wartelistenplatz Nr. {user.slot + 1}</label>
-        </>}
-
-        {user.role_factor && <div className='flex items-center gap-2 mb-2'>
-          <div className="w-24"><EventUserRole user={user}/></div>
-          <label>{GetRoleFromPercent(user.role_factor).name}</label>
-        </div>}
-
-        {user.guests && user.guests != 0 && <div className='flex items-center gap-2'>
-          <EventUserGuests user={user}/>
-          <label>Bringt {user.guests} Personen mit.</label>
-        </div>}
-
-        {user.open && <div className='flex items-center gap-2'>
-          <EventUserOpen user={user}/>
-          <label>Hat Interesse mit neuen Personen zu fesseln.</label>
-        </div>}
-      </div>)
-    }
-
-
-    return (<div className='flex justify-center items-center flex-wrap' onClick={() => setSelctedUser(user)}>
-      <EventUserStateView user={user}/>
-      <EventUserName user={user} bold={user.user_id == self_user_id}/>
-      <div className='grow'></div>
-      <div className='flex items-center'>
-        <EventUserGuests user={user}/>
-        <EventUserOpen user={user}/>
-        <div className="w-24"><EventUserRole user={user}/></div>
-      </div>
-    </div>)
-  }
 
   const registerInfo = <label>
     {logged_in_event.register_count} / {logged_in_event.slots} angemeldet ---
@@ -285,27 +376,66 @@ const UserList = ({users, logged_in_event, self_user_id}: {
   return (<div className='border-round bg-white'>
     <DataScroller
       value={users.registered}
-      itemTemplate={Template}
+      itemTemplate={(u: EventUser) => <UserListTemplate
+        user={u}
+        self_user_id={self_user_id}
+        selected_user={selected_user}
+        setSelctedUser={setSelctedUser}/>}
       rows={20}
       buffer={0.4}
       header={registerInfo}/>
 
     {logged_in_event.new_slots > 0 && <DataScroller
       value={users.new}
-      itemTemplate={Template}
+      itemTemplate={(u: EventUser) => <UserListTemplate
+        user={u}
+        self_user_id={self_user_id}
+        selected_user={selected_user}
+        setSelctedUser={setSelctedUser}/>}
       rows={20}
       buffer={0.4}
       header={newInfo}/>}
 
     {logged_in_event.wait_count > 0 && <DataScroller
       value={users.waiting}
-      itemTemplate={Template}
+      itemTemplate={(u: EventUser) => <UserListTemplate
+        user={u}
+        self_user_id={self_user_id}
+        selected_user={selected_user}
+        setSelctedUser={setSelctedUser}/>}
       rows={20}
       buffer={0.4}
       header={waitInfo}/>}
   </div>)
 }
 
+const UserListCheckAttention = ({users, logged_in_event, self_user_id}: {
+  users: EventUser[],
+  logged_in_event: PrivateRopeEvent,
+  self_user_id: number
+}) => {
+  const [selected_user, setSelctedUser] = useState<EventUser | undefined>(undefined);
+
+  const info = <label>
+    {logged_in_event.register_count} / {logged_in_event.slots} {"angemeldet --- "}
+    {logged_in_event.new_count} / {logged_in_event.new_slots} neu
+    {logged_in_event.wait_count === 1 && " --- " + logged_in_event.wait_count + " wartet"}
+    {logged_in_event.wait_count > 1 && " --- " + logged_in_event.wait_count + "warten"}
+  </label>
+
+  return (<div className='border-round bg-white'>
+    <DataScroller
+      value={users}
+      itemTemplate={(u: EventUser) => <UserListTemplate
+        user={u}
+        self_user_id={self_user_id}
+        selected_user={selected_user}
+        setSelctedUser={setSelctedUser}/>}
+      rows={20}
+      buffer={0.4}
+      header={info}/>
+  </div>)
+}
 
 const Register = (
   {user_id, event_id, register_to_event, setRegisterToEvent, setPage, OnRegister}:
