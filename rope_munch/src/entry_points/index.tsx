@@ -13,8 +13,6 @@ import AdminUsers from "../pages/AdminUsers.tsx";
 import AdminEvents from "../pages/AdminEvents.tsx";
 import {GetUserId} from "../api/auth.ts";
 
-
-
 export enum Page {
   Events,
   Login,

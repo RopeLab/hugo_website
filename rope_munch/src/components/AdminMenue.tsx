@@ -1,17 +1,17 @@
-import { MenuItem } from "primereact/menuitem";
-import { Menu } from 'primereact/menu';
+import {MenuItem} from "primereact/menuitem";
+import {Menu} from 'primereact/menu';
 import {Button} from "primereact/button";
 import {useEffect, useRef, useState} from "react";
 import {Page} from "../entry_points";
-import {GetAdmin} from "../api/auth.ts";
+import {HasPermission, UserPermission} from "../api/permissions.ts";
 
 
 const AdminMenue = ({user_id, setPage}: {user_id: number, setPage: (page: Page) => void}) => {
 
   const [admin, setAdmin] = useState<boolean>(false);
   useEffect(() => {
-    GetAdmin(user_id, setAdmin);
-  })
+    HasPermission(user_id, UserPermission.Admin, setAdmin);
+  }, [])
 
   const menu = useRef(null);
   let items: MenuItem[] = [

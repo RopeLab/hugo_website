@@ -85,16 +85,9 @@ export const GetUserId = (
 
 export const GetEmail = (
     userId: number,
-    setEmail: (email: string) => void,
+    set: (val: string) => void,
 ) => {
-  GetAPIAndParse("/user/" + userId + "/email", setEmail);
-}
-
-export const GetAdmin = (
-  userId: number,
-  setAdmin: (email: boolean) => void,
-) => {
-  GetAPIAndParse("/user/" + userId + "/admin", setAdmin);
+  GetAPIAndParse("/user/" + userId + "/email", set);
 }
 
 export const PostRemoveUser = (

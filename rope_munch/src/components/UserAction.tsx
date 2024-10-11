@@ -24,7 +24,7 @@ export const UserActionView = ({user_id}: {user_id: number}) => {
     let dayNames: string[] = ["Start"];
     let people: number[] = [0];
     let people_waiting: number[] = [0];
-    sorted_actions.forEach((action, i) => {
+    sorted_actions.forEach((action) => {
       dayNames.push(GetGermanDateTime(new Date(action.date)))
 
       let amount = action.guests + 1;

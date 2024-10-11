@@ -9,8 +9,10 @@ import Markdown from 'react-markdown'
 import {GetGermanDate, GetGermanDateTime, GetGermanTime} from "../api/events";
 import {
   ChangeGuestsOfEvent,
-  EventUser, EventUserLists,
-  EventUserState, GetEventUser,
+  EventUser,
+  EventUserLists,
+  EventUserState,
+  GetEventUser,
   GetEventUsers,
   RegisterToEvent,
   UnRegisterFromEvent
@@ -20,21 +22,23 @@ import {
   EventUserName,
   EventUserOpen,
   EventUserRole,
-  EventUserStateView, FetlifeLink
+  EventUserStateView,
+  FetlifeLink
 } from "../components/EventUserViews";
 import {Page} from "../entry_points";
 import AdminMenue from "../components/AdminMenue.tsx";
 import {Logout} from "../components/Logout.tsx";
 import {
   GetEventDates,
-  GetLoggedInEvent,
+  GetPrivateEvent,
   GetPublicEvent,
-  LoggedInRopeEvent,
+  PrivateRopeEvent,
   PublicRopeEvent,
   RopeEventDate
 } from "../api/event_public.ts";
-import Loading from "../components/Loading.tsx";
-import {GetRoleFromPercent} from "../api/data.tsx";
+import Loading from "../components/Loading";
+import {GetRoleFromPercent} from "../api/data";
+import {HasPermission, UserPermission} from "../api/permissions.ts";
 
 
 export const Events = ({user_id, register_to_event, setRegisterToEvent, setPage, onLoggedOut}: {
@@ -81,32 +85,58 @@ export const Events = ({user_id, register_to_event, setRegisterToEvent, setPage,
     setEventDate(new_event)
   }, [event_dates])
 
-  const [public_event_data, setPublicEventData] = useState<PublicRopeEvent | undefined>(undefined)
-  const [logged_in_event_data, setLoggedInEventData] = useState<LoggedInRopeEvent | undefined>(undefined)
   const [event_user, setEventUser] = useState<EventUser | undefined | "not_registered">(undefined)
-  const [users, setUsers] = useState<EventUserLists | undefined>(undefined)
+  const [verified, setVerified] = useState<boolean | undefined>(undefined);
 
-  const reloadUsers = () => {
-    if (!event_date) {
-      setPublicEventData(undefined);
-      setLoggedInEventData(undefined);
-      setUsers(undefined);
+  useEffect(() => {
+    if (!user_id) {
       return
     }
 
-    GetPublicEvent(event_date.id, setPublicEventData)
+    HasPermission(user_id, UserPermission.Verified, setVerified);
+  }, [user_id])
 
-    if (user_id) {
-      GetLoggedInEvent(event_date.id, setLoggedInEventData);
-      GetEventUser(event_date.id, user_id, setEventUser);
-      GetEventUsers(event_date.id, setUsers);
-    } else {
-      setLoggedInEventData(undefined);
-      setEventUser(undefined);
+
+  const [public_event_data, setPublicEventData] = useState<PublicRopeEvent | undefined>(undefined)
+  const [private_event_data, setPrivateEventData] = useState<PrivateRopeEvent | undefined>(undefined)
+  const [users, setUsers] = useState<EventUserLists | undefined>(undefined)
+
+  const reloadEventData = () => {
+    if (!event_date) {
+      setPublicEventData(undefined);
+      setPrivateEventData(undefined);
       setUsers(undefined);
+      setEventUser(undefined);
+      return
     }
+
+    if (!user_id) {
+      GetPublicEvent(event_date.id, setPublicEventData);
+      setPrivateEventData(undefined);
+      setUsers(undefined);
+      setEventUser(undefined);
+      return;
+    }
+
+    if (verified == undefined) {
+      return;
+    }
+
+    if (!verified) {
+      GetPublicEvent(event_date.id, setPublicEventData);
+      setPrivateEventData(undefined);
+      setUsers(undefined);
+      GetEventUser(event_date.id, user_id, setEventUser);
+
+      return;
+    }
+
+    setPublicEventData(undefined);
+    GetPrivateEvent(event_date.id, setPrivateEventData);
+    GetEventUsers(event_date.id, setUsers);
+    GetEventUser(event_date.id, user_id, setEventUser);
   }
-  useEffect(reloadUsers, [event_date, user_id])
+  useEffect(reloadEventData, [event_date, user_id, verified])
 
   useEffect(() => {
     if (!event_user || event_user == "not_registered") {
@@ -147,12 +177,12 @@ export const Events = ({user_id, register_to_event, setRegisterToEvent, setPage,
             register_to_event={register_to_event}
             setRegisterToEvent={setRegisterToEvent}
             setPage={setPage}
-            OnRegister={reloadUsers}/>
+            OnRegister={reloadEventData}/>
             </> : <>
-          {logged_in_event_data ? <div className='flex justify-items-center flex-wrap md:flex-nowrap gap-2'>
-            <Unregister event_id={event_date.id!} user_id={user_id!} OnUnRegister={reloadUsers}/>
-          <ChangeGuests event_id={event_date.id!} event_user={event_user!} free_slots={logged_in_event_data.slots - logged_in_event_data.register_count}
-                                                  OnChange={reloadUsers}/>
+          {private_event_data ? <div className='flex justify-items-center flex-wrap md:flex-nowrap gap-2'>
+            <Unregister event_id={event_date.id!} user_id={user_id!} OnUnRegister={reloadEventData}/>
+            <ChangeGuests event_id={event_date.id!} event_user={event_user!} free_slots={private_event_data.slots - private_event_data.register_count}
+                                                  OnChange={reloadEventData}/>
             </div>:
             <Loading/>}
           </>}
@@ -162,13 +192,13 @@ export const Events = ({user_id, register_to_event, setRegisterToEvent, setPage,
       </>}
     </div>
 
-    {logged_in_event_data ? <>
+    {private_event_data ? <>
       <Header event_date={event_date!}/>
       {users ?
-        <UserList users={users} logged_in_event={logged_in_event_data} self_user_id={user_id!}/> :
+        <UserList users={users} logged_in_event={private_event_data} self_user_id={user_id!}/> :
         <Loading/>
       }
-      <EventText logged_in_event={logged_in_event_data}/>
+      <EventText logged_in_event={private_event_data}/>
     </> : <>
       {public_event_data ? <>
         <PublicEventText event_date={event_date!} public_event={public_event_data}/>
@@ -182,7 +212,7 @@ export const Events = ({user_id, register_to_event, setRegisterToEvent, setPage,
 
 const UserList = ({users, logged_in_event, self_user_id}: {
   users: EventUserLists,
-  logged_in_event: LoggedInRopeEvent,
+  logged_in_event: PrivateRopeEvent,
   self_user_id: number
 }) => {
   const [selected_user, setSelctedUser] = useState<EventUser | undefined>(undefined);
@@ -481,7 +511,7 @@ const Header = ({event_date}: { event_date: RopeEventDate }) => {
   </div>
 }
 
-const EventText = ({logged_in_event}: { logged_in_event: LoggedInRopeEvent }) => {
+const EventText = ({logged_in_event}: { logged_in_event: PrivateRopeEvent }) => {
   return <div className='border-round bg-primary my-2'>
     <Markdown
       className="py-1"

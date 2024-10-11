@@ -17,7 +17,7 @@ export class PublicRopeEvent {
   "description": string
 }
 
-export class LoggedInRopeEvent {
+export class PrivateRopeEvent {
   "slots": number;
   "new_slots": number;
   "register_count": number;
@@ -52,9 +52,9 @@ export const GetPublicEvent = (
   GetAPIAndParse("/event/" + id + "/public_data", setEvent)
 }
 
-export const GetLoggedInEvent = (
+export const GetPrivateEvent = (
   id: number,
-  setEvent: (event: LoggedInRopeEvent) => void,
+  setEvent: (event: PrivateRopeEvent) => void,
 ) => {
   GetAPIAndParse("/event/" + id + "/logged_in_data", setEvent)
 }

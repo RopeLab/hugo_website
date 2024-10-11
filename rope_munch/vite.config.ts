@@ -36,7 +36,9 @@ export default defineConfig({
             fs.rmSync(path.join(static_dir, file))
           }
 
-          fs.cpSync(path.join(result_dir, file), path.join(short_codes_dir, file));
+          if (fs.existsSync(path.join(result_dir, file))) {
+            fs.cpSync(path.join(result_dir, file), path.join(short_codes_dir, file));
+          }
         })
       }
     },
