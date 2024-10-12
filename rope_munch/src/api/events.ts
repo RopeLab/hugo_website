@@ -10,7 +10,8 @@ export class RopeEvent {
   "new_slots": number;
   "visible": boolean;
   "archive": boolean;
-  "description": string;
+  "custom_workshop": string;
+  "workshop_file": string;
 }
 
 export class RopeEventFromAPI {
@@ -23,7 +24,8 @@ export class RopeEventFromAPI {
   "new_slots": number;
   "visible": boolean;
   "archive": boolean;
-  "description": string;
+  "custom_workshop": string;
+  "workshop_file": string;
 }
 
 // Remove the Z when converting date to json

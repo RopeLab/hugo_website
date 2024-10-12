@@ -40,7 +40,6 @@ cd ../backend &&
 cargo run
 ```
 
-
 ### Run rope-munch tailwindcss watch
 ```shell
 cd rope_munch &&

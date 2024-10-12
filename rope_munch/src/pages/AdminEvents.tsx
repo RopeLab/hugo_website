@@ -5,6 +5,7 @@ import {useEffect, useState} from "react";
 import {DeleteEvent, GetEvents, GetGermanDateTime, RopeEvent} from "../api/events";
 import {EventSettings} from "../components/EventSettings";
 import { ConfirmPopup, confirmPopup } from 'primereact/confirmpopup';
+import {GetPossibleWorkshops} from "../api/workshops.ts";
 
 export const parseNumber = (s: string): number => {
   const n = parseInt(s)
@@ -19,21 +20,25 @@ const AdminEvents = ({back}: {back: () => void}) => {
   const [events, setEvents] = useState<RopeEvent[]>([]);
   const [showNewEvent, setShowNewEvent] = useState<boolean>(false);
   const [newEvent, setNewEvent] = useState<RopeEvent>({
+    custom_workshop: "",
+    workshop_file: "Custom",
     archive: false,
     archive_date: new Date(),
     date: new Date(),
-    description: "Beschreibung",
     id: undefined,
     register_deadline: new Date(),
     slots: 45,
     new_slots: 5,
     visible: false,
     visible_date: new Date()
-
   });
+  const [possible_workshops, setPossibleWorkshops] = useState<string[]>([])
 
   useEffect(() => {
-    GetEvents(setEvents)
+    GetEvents(setEvents);
+    GetPossibleWorkshops((d: string[]) => {
+      setPossibleWorkshops([...d, "Custom"]);
+    });
   }, [])
 
 
@@ -62,7 +67,7 @@ const AdminEvents = ({back}: {back: () => void}) => {
           <EventSettings event={event} setEvent={(newEvent) => {
             events[i] = newEvent;
             setEvents([...events]);
-          }} onSave={back}/>
+          }} onSave={back} possible_workshops={possible_workshops}/>
         </AccordionTab>
       );
     });
@@ -74,7 +79,7 @@ const AdminEvents = ({back}: {back: () => void}) => {
         <EventSettings event={newEvent} setEvent={setNewEvent} onSave={() => {
           setShowNewEvent(false);
           GetEvents(setEvents);
-        }}/>
+        }} possible_workshops={possible_workshops}/>
       </Dialog>
 
       <div className="flex gap-2 my-2">

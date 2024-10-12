@@ -1,11 +1,10 @@
-import React, {useEffect, useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {Dropdown} from 'primereact/dropdown';
 import {Toast} from 'primereact/toast';
 import {DataScroller} from 'primereact/datascroller';
 import {Button} from 'primereact/button';
 import {Dialog} from 'primereact/dialog'
 import {Image} from 'primereact/image';
-import Markdown from 'react-markdown'
 import {GetGermanDate, GetGermanDateTime, GetGermanTime} from "../api/events";
 import {
   ChangeGuestsOfEvent,
@@ -661,13 +660,11 @@ const Header = ({event_date}: { event_date: RopeEventDate }) => {
 
 const EventText = ({logged_in_event}: { logged_in_event: PrivateRopeEvent }) => {
   return <div className='border-round bg-primary my-2'>
-    <Markdown
-      className="py-1"
-    >{logged_in_event.description}</Markdown>
+    <div dangerouslySetInnerHTML={{__html: logged_in_event.description}}/>
   </div>
 }
 
-const PublicEventText = ({ event_date, public_event }: { event_date: RopeEventDate, public_event: PublicRopeEvent }) => {
+const PublicEventText = ({event_date, public_event}: { event_date: RopeEventDate, public_event: PublicRopeEvent }) => {
   return <div className='flex flex-col border-round bg-primary my-3'>
     <div className='flex'>
       <div className='flex flex-col my-3 w-12rem min-w-max font-bold items-center'>
@@ -697,7 +694,7 @@ const PublicEventText = ({ event_date, public_event }: { event_date: RopeEventDa
     </div>
 
     <div>
-      <Markdown>{public_event.description}</Markdown>
+      <div dangerouslySetInnerHTML={{__html: public_event.description}}/>
     </div>
   </div>
 }

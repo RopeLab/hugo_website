@@ -7,6 +7,7 @@ import {useRef} from "react";
 import {parseNumber} from "../pages/AdminEvents";
 import {Toast} from "primereact/toast";
 import {Checkbox} from "primereact/checkbox";
+import {Dropdown} from "primereact/dropdown";
 
 const addDays = (date: Date, days: number) => {
   let newDate = new Date(date);
@@ -14,7 +15,7 @@ const addDays = (date: Date, days: number) => {
   return newDate;
 }
 
-export const EventSettings = ({event, setEvent, onSave}: {event: RopeEvent, setEvent: (event: RopeEvent) => void, onSave: () => void}) => {
+export const EventSettings = ({event, setEvent, onSave, possible_workshops}: {event: RopeEvent, setEvent: (event: RopeEvent) => void, onSave: () => void, possible_workshops: string[]}) => {
   const toast = useRef<Toast>(null);
 
   return (
@@ -41,7 +42,7 @@ export const EventSettings = ({event, setEvent, onSave}: {event: RopeEvent, setE
           setEvent({...event, register_deadline: e.value})
         }}/>
 
-        <div className='flex gap-2 flex-wrap' >
+        <div className='flex gap-2 flex-wrap'>
           <Button label={"1 Tag vor Event"} onClick={() => {
             setEvent({...event, register_deadline: addDays(event.date, -1)})
           }}/>
@@ -68,7 +69,7 @@ export const EventSettings = ({event, setEvent, onSave}: {event: RopeEvent, setE
           }}/>
         </div>
 
-        <div className='flex gap-2 flex-wrap items-center' >
+        <div className='flex gap-2 flex-wrap items-center'>
           <Button label={"2 Wochen vor Event"} onClick={() => {
             setEvent({...event, visible_date: addDays(event.date, -14)})
           }}/>
@@ -92,13 +93,13 @@ export const EventSettings = ({event, setEvent, onSave}: {event: RopeEvent, setE
         </div>
       </div>
 
-      <div className='flex items-center gap-2 m-2 my-4 flex-wrap' >
+      <div className='flex items-center gap-2 m-2 my-4 flex-wrap'>
         <label className='font-bold'>Archviert:</label>
         <Checkbox checked={event.archive} onChange={(e) => {
           setEvent({...event, archive: e.target.checked!})
         }}/>
 
-        <div className='flex gap-2 flex-wrap items-center' >
+        <div className='flex gap-2 flex-wrap items-center'>
           <label>ab:</label>
           <Calendar showTime value={event.archive_date} onChange={(e) => {
             if (e.value == undefined) {
@@ -134,11 +135,23 @@ export const EventSettings = ({event, setEvent, onSave}: {event: RopeEvent, setE
         />
       </div>
 
+      <div className='flex items-center gap-2 m-2 flex-wrap'>
+        <label className='font-bold'>Workshop:</label>
+        <Dropdown
+          value={event.workshop_file}
+          onChange={(e) => setEvent({...event, workshop_file: e.value})}
+          options={possible_workshops}
+          placeholder="Wähle ein Workshop Text"
+          scrollHeight="full"
+        />
+      </div>
+
+      <label className='font-bold'>Custom Workshop Text:</label>
       <InputTextarea
         autoResize
-        value={event.description}
+        value={event.custom_workshop}
         onChange={(e) => {
-          setEvent({...event, description: e.target.value})
+          setEvent({...event, custom_workshop: e.target.value})
         }} rows={10} className='w-full'/>
 
       <div className='flex flex-row-reverse mt-2 flex-wrap'>
